@@ -13,6 +13,7 @@ import com.ustsinau.chapter13.repository.impl.GsonWriterRepositoryImpl;
 import com.ustsinau.chapter13.services.CacheService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CacheServiceImpl implements CacheService {
 
@@ -22,9 +23,9 @@ public class CacheServiceImpl implements CacheService {
 
     private final LabelRepository labelRepository = new GsonLabelRepository();
 
+
     public CacheServiceImpl() {
     }
-
 
     @Override
     public void initCache() {
@@ -35,14 +36,11 @@ public class CacheServiceImpl implements CacheService {
         cache.setMaxPostId(getMaxPostId());
     }
 
-
-
     private Long getMaxWriterId(){
         List<Writer> writers = writerRepository.getAll();
 
         if(!writers.isEmpty()){
-
-           long id = writers.toArray().length;  // нужно переделать что бы получать id последнего автора
+            long id = writers.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
 
           cache.setMaxWriterId(id);
 
@@ -55,19 +53,24 @@ public class CacheServiceImpl implements CacheService {
     private Long getMaxPostId(){
         List<Post> posts = postRepository.getAll();
         if(!posts.isEmpty()){
-            long id = posts.toArray().length;
+         //   long id = posts.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
+            long id = posts.stream().mapToLong(Post::getId).summaryStatistics().getMax();
             cache.setMaxPostId(id);
         }else {
             cache.setMaxPostId(0);
         }
-        return cache.getMaxPostId();
+        return cache.getMaxPostId(); // что вернуть тут?
     }
     private Long getMaxLabelId() {
         List<Label> labels = labelRepository.getAll();
-        if(labels.isEmpty()){
+        if(!labels.isEmpty()){
+            long id = labels.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
+
+            cache.setMaxLabelId(id);
+        }else {
             cache.setMaxLabelId(0);
         }
-        return 1l;
+        return cache.getMaxLabelId(); // что вернуть тут?
     }
 
 }

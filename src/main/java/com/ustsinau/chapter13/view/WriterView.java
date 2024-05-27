@@ -17,7 +17,7 @@ public class WriterView {
             "1.Создать нового автора\n" +
             "2.Изменить автора\n" +
             "3.Удалить автора\n" +
-            "4.Получить имя автора по индексу\n" +
+            "4.Получить информацию об авторе по id\n" +
             "5.Список всех авторов\n";
 
     WriterController writerControllerContr = new WriterController();
@@ -61,7 +61,7 @@ public class WriterView {
 
     }
 
-    public void updateWriter() {
+    public void updateWriter() throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите индекс автора для его изменения:");
         long indexUp = Long.parseLong(scanner.next());
@@ -71,35 +71,41 @@ public class WriterView {
         String lastNameWrUP = scanner.next();
 
 
-        System.out.println("Введите статус для автора:\n" +
-                "1.Активен\n" +
-                "2.Удалить");
-        String statUp = scanner.next();
-        Status stUp = null;
-        switch (statUp) {
-            case "1":
-                stUp = Status.ACTIVE;
-                break;
-            case "2":
-                stUp = Status.DELETED;
-                break;
-        }
+//        System.out.println("Введите статус для автора:\n" +
+//                "1.Активен\n" +
+//                "2.Удалить");
+//        String statUp = scanner.next();
+//        Status stUp = null;
+//        switch (statUp) {
+//            case "1":
+//                stUp = Status.ACTIVE;
+//                break;
+//            case "2":
+//                stUp = Status.DELETED;
+//                break;
+//        }
+        scanner.nextLine();
+        System.out.println("Введите id постов для автора через ПРОБЕЛ:");
+        String postsUp = scanner.nextLine();
 
-        writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, stUp);
+        writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, postsUp);
+        headConsole.run();
     }
 
-    public void deleteWriter() {
+    public void deleteWriter() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите индекс проекта для его удаления:");
+        System.out.println("Введите id автора для его удаления:");
         long indexForDelete = Long.parseLong(scanner.next());
         writerControllerContr.deleteWriter(indexForDelete);
+        headConsole.run();
     }
 
-    public void getIdWriter() {
+    public void getIdWriter() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите индекс автора для получения всей информации:");
+        System.out.println("Введите id автора для получения всей информации:");
         long id = Long.parseLong(scanner.next());
-        System.out.println(writerControllerContr.getValueByIndex(id).toString());
+        System.out.println( "\n" + writerControllerContr.getValueByIndex(id) + "\n");
+        headConsole.run();
     }
 
 

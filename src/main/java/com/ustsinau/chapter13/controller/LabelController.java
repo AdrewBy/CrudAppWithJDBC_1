@@ -25,6 +25,7 @@ public class LabelController {
 
 
     public void updateLabel(Label labelNew) {
+
         label.update(labelNew);
     }
 
@@ -34,6 +35,7 @@ public class LabelController {
     }
 
     public Label getValueByIndex(Long id) {
+
         return label.getById(id);
     }
 

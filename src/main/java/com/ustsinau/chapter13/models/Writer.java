@@ -15,7 +15,7 @@ public class Writer {
     private String firstName;
     @SerializedName("LastName")
     private String lastName;
-    @SerializedName("Posts")
+    @SerializedName("Posts list")
     private List<Post> posts;
     @SerializedName("Status")
     Status status ;
@@ -32,12 +32,11 @@ public class Writer {
 
 
 
-    public Writer(long id, String firstName, String lastName, List<Post> posts, Status status) {
+    public Writer(long id, String firstName, String lastName, List<Post> posts) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.posts = posts;
-        this.status = status;
     }
 
     public  long getId() {

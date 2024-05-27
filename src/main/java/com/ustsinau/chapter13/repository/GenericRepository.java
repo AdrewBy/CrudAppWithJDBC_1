@@ -8,7 +8,7 @@ import java.util.List;
 public interface GenericRepository<T, ID> {
 
 
-    T getById(ID id);
+    T getById(ID id) ;
     void create(T value);
 
     void update(T value) ;

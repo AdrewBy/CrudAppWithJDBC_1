@@ -12,11 +12,9 @@ public class Post {
     private String title;
     @SerializedName("Content")
     private String content;
-    @SerializedName("Label")
+    @SerializedName("Labels list")
     private List<Label> labels;
 
-    public Post() {
-    }
 
     public Post(long id, String title, String content, List<Label> labels) {
         this.id = id;

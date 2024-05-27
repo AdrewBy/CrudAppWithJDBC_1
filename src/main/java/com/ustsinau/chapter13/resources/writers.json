@@ -1,8 +1,44 @@
 [
   {
+    "ID": 1,
+    "FirstName": "gthsq",
+    "LastName": "SecondName",
+    "Posts list": [
+      {
+        "ID": 1,
+        "Title": "fdsd2",
+        "Content": "sdcdsv23"
+      },
+      {
+        "ID": 2,
+        "Title": "gdg",
+        "Content": "scfs"
+      }
+    ],
+    "Status": "ACTIVE"
+  },
+  {
+    "ID": 2,
+    "FirstName": "свс",
+    "LastName": "мвама",
+    "Status": "DELETED"
+  },
+  {
+    "ID": 3,
+    "FirstName": "Ivan",
+    "LastName": "Ivanov",
+    "Status": "ACTIVE"
+  },
+  {
     "ID": 4,
-    "FirstName": "ddd",
-    "LastName": "rrr",
+    "FirstName": "Sidr",
+    "LastName": "Sidorov",
+    "Status": "ACTIVE"
+  },
+  {
+    "ID": 5,
+    "FirstName": "Best",
+    "LastName": "Better",
     "Status": "ACTIVE"
   }
 ]

@@ -6,6 +6,8 @@ public class Cache {
     private long maxPostId;
     private long maxLabelId;
 
+    private volatile long  count ;
+
     public long getMaxWriterId() {
         return maxWriterId;
     }
@@ -28,5 +30,9 @@ public class Cache {
 
     public void setMaxLabelId(long maxLabelId) {
         this.maxLabelId = maxLabelId;
+    }
+
+    public long getCount() {
+        return count;
     }
 }

@@ -32,15 +32,15 @@ public class PostController {
     public void createPostWithoutLabel(String title, String content) {
         long maxPostId = cache.getMaxPostId();
         maxPostId++;
-        posts.create(new Post(maxPostId,title, content));
+        posts.create(new Post(maxPostId, title, content));
         cache.setMaxPostId(maxPostId);
     }
 
     public void updatePost(long id, String title, String content, String labels) {
 
-        long[] numArr = Arrays.stream(labels.split("[ ]")).mapToLong(Long::parseLong).toArray();
+        long[] numArr = Arrays.stream(labels.split(" ")).mapToLong(e -> Long.parseLong(e)).toArray();
 
-        for (int i = 0; i < numArr.length; i++) {
+        for (int i = 0; i < numArr.length; i++) {       // подумать над этим
             labelsPost.add(label.getById(numArr[i]));
         }
 
@@ -52,8 +52,8 @@ public class PostController {
         posts.delete(index);
     }
 
-    public Post getValueByIndex(long index) {
-        return posts.getById(index);
+    public Post getValueByIndex(long id) {
+        return posts.getById(id);
     }
 
 }
