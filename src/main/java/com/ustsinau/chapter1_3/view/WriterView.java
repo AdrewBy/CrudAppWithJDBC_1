@@ -54,11 +54,10 @@ public class WriterView {
         long[] numArr = Arrays.stream(postsUp.split(" ")).mapToLong(e -> Long.parseLong(e)).toArray();
 
         for (long l : numArr) {                               // подумать над этим
-            if (posts.getById(l).getLabels().isEmpty()) {
-                postsWriter.add(posts.getById(l));
-            }
-        }
 
+                postsWriter.add(posts.getById(l));
+
+        }
         writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, postsWriter);
         headConsole.run();
     }

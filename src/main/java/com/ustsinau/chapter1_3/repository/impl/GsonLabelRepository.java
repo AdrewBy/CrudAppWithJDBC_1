@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -22,9 +23,11 @@ public class GsonLabelRepository implements LabelRepository {
     private final String FILE = "src/main/resources/labels.json";
 
     @Override
-    public void create(Label value) {
+    public void create(Label label) {
         List<Label> labels = getAll();
-        labels.add(value);
+        long maxLabelId = getNewId(getAll());
+        label.setId(maxLabelId);
+        labels.add(label);
 
         saverFile(labels);
     }
@@ -88,7 +91,7 @@ public class GsonLabelRepository implements LabelRepository {
         return labels;
     }
 
-    public void saverFile(List<Label> labelList) {
+   public void saverFile(List<Label> labelList) {
 
         try (FileWriter fileWriter = new FileWriter(FILE)) {
 
@@ -98,6 +101,11 @@ public class GsonLabelRepository implements LabelRepository {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private Long getNewId(List<Label> labels) {
+      return   labels.stream().max(Comparator.comparingLong(Label::getId))
+              .map(label -> label.getId()+1).orElse((1L));
     }
 
 }

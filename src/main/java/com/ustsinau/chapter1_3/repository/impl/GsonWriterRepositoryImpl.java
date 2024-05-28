@@ -4,6 +4,7 @@ package com.ustsinau.chapter1_3.repository.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.ustsinau.chapter1_3.models.Label;
 import com.ustsinau.chapter1_3.models.Post;
 import com.ustsinau.chapter1_3.models.Status;
 import com.ustsinau.chapter1_3.models.Writer;
@@ -12,6 +13,7 @@ import com.ustsinau.chapter1_3.repository.WriterRepository;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -25,6 +27,10 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
     @Override
     public void create(Writer value) {
         List<Writer> writerList = getAll();
+        long maxWriterlId = getNewId(getAll());
+        value.setId(maxWriterlId);
+
+
         writerList.add(value);
 
         saverFile(writerList);
@@ -108,6 +114,10 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    private Long getNewId(List<Writer> writers) {
+        return   writers.stream().max(Comparator.comparingLong(Writer::getId))
+                .map(writer -> writer.getId()+1).orElse((1L));
     }
 
 }

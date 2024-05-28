@@ -25,8 +25,20 @@
   },
   {
     "ID": 3,
-    "FirstName": "Ivan",
-    "LastName": "Ivanov",
+    "FirstName": "fsdf",
+    "LastName": "fsfsdf",
+    "Posts list": [
+      {
+        "ID": 3,
+        "Title": "fsfv",
+        "Content": "vfvf"
+      },
+      {
+        "ID": 4,
+        "Title": "sfsdff",
+        "Content": "gsnhn"
+      }
+    ],
     "Status": "ACTIVE"
   },
   {

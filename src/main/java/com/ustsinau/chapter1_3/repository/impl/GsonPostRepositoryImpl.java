@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -25,6 +26,8 @@ public class GsonPostRepositoryImpl implements PostRepository {
     @Override
     public void create(Post value) {
         List<Post> posts = getAll();
+        long maxLabelId = getNewId(getAll());
+        value.setId(maxLabelId);
         posts.add(value);
         saverFile(posts);
     }
@@ -46,10 +49,7 @@ public class GsonPostRepositoryImpl implements PostRepository {
             post.setContent(newContent);
             post.setLabels(newLabels);
         }
-
-
         saverFile(posts);
-
     }
 
     @Override
@@ -97,8 +97,11 @@ public class GsonPostRepositoryImpl implements PostRepository {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-
         return postAll;
+    }
+    private Long getNewId(List<Post> posts) {
+        return   posts.stream().max(Comparator.comparingLong(Post::getId))
+                .map(post -> post.getId()+1).orElse((1L));
     }
 }
 

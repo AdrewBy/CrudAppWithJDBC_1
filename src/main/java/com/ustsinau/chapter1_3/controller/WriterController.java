@@ -8,8 +8,6 @@ import com.ustsinau.chapter1_3.repository.impl.GsonWriterRepositoryImpl;
 
 import java.util.List;
 
-import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdRepositoryImpl.generatorId;
-
 public class WriterController {
     private final WriterRepository writers = new GsonWriterRepositoryImpl();
 
@@ -19,11 +17,7 @@ public class WriterController {
 
 
     public void createWriterWithoutPost(String firstName, String lastName) {
-        long maxWriterId = generatorId.getMaxWriterId();
-        maxWriterId++;
-
-        writers.create(new Writer(maxWriterId,firstName, lastName, Status.ACTIVE));
-        generatorId.setMaxWriterId(maxWriterId);
+        writers.create(new Writer(firstName, lastName, Status.ACTIVE));
 
     }
 

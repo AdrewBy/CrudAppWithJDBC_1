@@ -23,15 +23,6 @@ public class Writer {
     public Writer() {
     }
 
-    public Writer(long id, String firstName, String lastName, Status status) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.status = status;
-    }
-
-
-
     public Writer(long id, String firstName, String lastName, List<Post> posts) {
         this.id = id;
         this.firstName = firstName;
@@ -39,11 +30,17 @@ public class Writer {
         this.posts = posts;
     }
 
+    public Writer(String firstName, String lastName, Status status) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = status;
+    }
+
     public  long getId() {
         return id;
     }
 
-    public  void setId(int id) {
+    public  void setId(long id) {
         this.id = id;
     }
 

@@ -22,8 +22,8 @@ public class Post {
         this.content = content;
         this.labels = labels;
     }
-    public Post(long id, String title, String content) {
-        this.id = id;
+
+    public Post(String title, String content) {
         this.title = title;
         this.content = content;
     }
@@ -33,7 +33,7 @@ public class Post {
         return id;
     }
 
-    public  void setId(int id) {
+    public  void setId(long id) {
         this.id = id;
     }
 

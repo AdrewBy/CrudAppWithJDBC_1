@@ -14,16 +14,20 @@ public class Label {
     public Label() {
     }
 
-    public Label(long id, String name) {
-        this.id=id;
+    public Label(String name) {
         this.name=name;
+    }
+
+    public Label(long id, String name) {
+        this.name=name;
+        this.id=id;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
