@@ -6,7 +6,7 @@ import com.ustsinau.chapter1_3.repository.LabelRepository;
 
 import java.util.List;
 
-import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdImpl.cache;
+import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdRepositoryImpl.generatorId;
 
 public class LabelController {
     private final LabelRepository label = new GsonLabelRepository();
@@ -17,10 +17,10 @@ public class LabelController {
     }
 
     public void createLabel(String name) {
-        long maxLabelId = cache.getMaxLabelId();
+        long maxLabelId = generatorId.getMaxLabelId();
         maxLabelId++;
         label.create(new Label(maxLabelId, name));
-        cache.setMaxPostId(maxLabelId);
+        generatorId.setMaxPostId(maxLabelId);
     }
 
 

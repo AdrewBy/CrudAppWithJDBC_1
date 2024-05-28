@@ -7,7 +7,7 @@ import com.ustsinau.chapter1_3.repository.impl.GsonPostRepositoryImpl;
 
 import java.util.*;
 
-import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdImpl.cache;
+import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdRepositoryImpl.generatorId;
 
 public class PostController {
 
@@ -19,10 +19,10 @@ public class PostController {
     }
 
     public void createPostWithoutLabel(String title, String content) {
-        long maxPostId = cache.getMaxPostId();
+        long maxPostId = generatorId.getMaxPostId();
         maxPostId++;
         posts.create(new Post(maxPostId, title, content));
-        cache.setMaxPostId(maxPostId);
+        generatorId.setMaxPostId(maxPostId);
     }
 
     public void updatePost(long id, String title, String content, List<Label> labels) {

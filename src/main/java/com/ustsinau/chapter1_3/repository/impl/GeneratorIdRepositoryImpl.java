@@ -1,35 +1,35 @@
 package com.ustsinau.chapter1_3.repository.impl;
 
-import com.ustsinau.chapter1_3.models.Cache;
+import com.ustsinau.chapter1_3.models.GeneratorId;
 import com.ustsinau.chapter1_3.models.Label;
 import com.ustsinau.chapter1_3.models.Post;
 import com.ustsinau.chapter1_3.models.Writer;
-import com.ustsinau.chapter1_3.repository.GeneratorId;
+import com.ustsinau.chapter1_3.repository.GeneratorIdRepository;
 import com.ustsinau.chapter1_3.repository.LabelRepository;
 import com.ustsinau.chapter1_3.repository.PostRepository;
 import com.ustsinau.chapter1_3.repository.WriterRepository;
 
 import java.util.*;
 
-public class GeneratorIdImpl implements GeneratorId {
+public class GeneratorIdRepositoryImpl implements GeneratorIdRepository {
 
-    public static Cache cache;
+    public static GeneratorId generatorId;
     private final WriterRepository writerRepository = new GsonWriterRepositoryImpl();
     private final PostRepository postRepository= new GsonPostRepositoryImpl();
 
     private final LabelRepository labelRepository = new GsonLabelRepository();
 
 
-    public GeneratorIdImpl() {
+    public GeneratorIdRepositoryImpl() {
     }
 
     @Override
     public void initCache() {
-        cache = new Cache();
+        generatorId = new GeneratorId();
 
-        cache.setMaxWriterId(getMaxWriterId());
-        cache.setMaxLabelId(getMaxLabelId());
-        cache.setMaxPostId(getMaxPostId());
+        generatorId.setMaxWriterId(getMaxWriterId());
+        generatorId.setMaxLabelId(getMaxLabelId());
+        generatorId.setMaxPostId(getMaxPostId());
     }
 
     private Long getMaxWriterId(){
@@ -38,7 +38,7 @@ public class GeneratorIdImpl implements GeneratorId {
         if(!writers.isEmpty()) {
             long id = writers.stream().max((a, b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
 
-            cache.setMaxWriterId(id);
+            generatorId.setMaxWriterId(id);
         }
         return  0L; // что вернуть тут?
     }
@@ -48,7 +48,7 @@ public class GeneratorIdImpl implements GeneratorId {
         if(!posts.isEmpty()){
          //   long id = posts.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
             long id = posts.stream().mapToLong(Post::getId).summaryStatistics().getMax();
-            cache.setMaxPostId(id);
+            generatorId.setMaxPostId(id);
         }
         return 0L;
     }
@@ -57,7 +57,7 @@ public class GeneratorIdImpl implements GeneratorId {
         if(!labels.isEmpty()){
             long id = labels.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
 
-            cache.setMaxLabelId(id);
+            generatorId.setMaxLabelId(id);
         }
         return 0L;
     }

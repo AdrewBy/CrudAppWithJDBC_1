@@ -1,12 +1,11 @@
 package com.ustsinau.chapter1_3.models;
 
-public class Cache {
+public class GeneratorId {
 
     private long maxWriterId;
     private long maxPostId;
     private long maxLabelId;
 
-    private volatile long  count ;
 
     public long getMaxWriterId() {
         return maxWriterId;
@@ -32,7 +31,4 @@ public class Cache {
         this.maxLabelId = maxLabelId;
     }
 
-    public long getCount() {
-        return count;
-    }
 }
