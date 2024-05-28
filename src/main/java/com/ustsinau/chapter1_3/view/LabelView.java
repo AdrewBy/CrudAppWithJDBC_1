@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class LabelView {
     private final Scanner scanner = new Scanner(System.in);
-    private HeadConsole headConsole = new HeadConsole();
+    private final HeadConsole headConsole = new HeadConsole();
     public static final String ACTIONS_LABEL = "Введите действие:\n" +
             "1.Создать новый лэйбл\n" +
             "2.Изменить лэйбл\n" +

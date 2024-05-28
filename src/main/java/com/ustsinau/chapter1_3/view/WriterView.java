@@ -2,15 +2,22 @@ package com.ustsinau.chapter1_3.view;
 
 
 import com.ustsinau.chapter1_3.controller.WriterController;
+import com.ustsinau.chapter1_3.models.Post;
 import com.ustsinau.chapter1_3.models.Writer;
+import com.ustsinau.chapter1_3.repository.PostRepository;
+import com.ustsinau.chapter1_3.repository.impl.GsonPostRepositoryImpl;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class WriterView {
+    private final PostRepository posts = new GsonPostRepositoryImpl();
     private final Scanner scanner = new Scanner(System.in);
-    HeadConsole headConsole = new HeadConsole();
+    private final HeadConsole headConsole = new HeadConsole();
     public static final String ACTIONS_WRITER = "Введите действие:\n" +
             "1.Создать нового автора\n" +
             "2.Изменить автора\n" +
@@ -42,8 +49,17 @@ public class WriterView {
         scanner.nextLine();
         System.out.println("Введите id постов для автора через ПРОБЕЛ:");
         String postsUp = scanner.nextLine();
+        List<Post> postsWriter = new ArrayList<>();
 
-        writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, postsUp);
+        long[] numArr = Arrays.stream(postsUp.split(" ")).mapToLong(e -> Long.parseLong(e)).toArray();
+
+        for (long l : numArr) {                               // подумать над этим
+            if (posts.getById(l).getLabels().isEmpty()) {
+                postsWriter.add(posts.getById(l));
+            }
+        }
+
+        writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, postsWriter);
         headConsole.run();
     }
 

@@ -1,20 +1,17 @@
-package com.ustsinau.chapter1_3.services.impl;
+package com.ustsinau.chapter1_3.repository.impl;
 
 import com.ustsinau.chapter1_3.models.Cache;
 import com.ustsinau.chapter1_3.models.Label;
 import com.ustsinau.chapter1_3.models.Post;
 import com.ustsinau.chapter1_3.models.Writer;
+import com.ustsinau.chapter1_3.repository.GeneratorId;
 import com.ustsinau.chapter1_3.repository.LabelRepository;
 import com.ustsinau.chapter1_3.repository.PostRepository;
 import com.ustsinau.chapter1_3.repository.WriterRepository;
-import com.ustsinau.chapter1_3.repository.impl.GsonLabelRepository;
-import com.ustsinau.chapter1_3.repository.impl.GsonPostRepositoryImpl;
-import com.ustsinau.chapter1_3.repository.impl.GsonWriterRepositoryImpl;
-import com.ustsinau.chapter1_3.services.CacheService;
 
 import java.util.*;
 
-public class CacheServiceImpl implements CacheService {
+public class GeneratorIdImpl implements GeneratorId {
 
     public static Cache cache;
     private final WriterRepository writerRepository = new GsonWriterRepositoryImpl();
@@ -23,7 +20,7 @@ public class CacheServiceImpl implements CacheService {
     private final LabelRepository labelRepository = new GsonLabelRepository();
 
 
-    public CacheServiceImpl() {
+    public GeneratorIdImpl() {
     }
 
     @Override
@@ -38,15 +35,12 @@ public class CacheServiceImpl implements CacheService {
     private Long getMaxWriterId(){
         List<Writer> writers = writerRepository.getAll();
 
-        if(!writers.isEmpty()){
-            long id = writers.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
+        if(!writers.isEmpty()) {
+            long id = writers.stream().max((a, b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
 
-          cache.setMaxWriterId(id);
-
-        } else {
-            cache.setMaxWriterId(0);
+            cache.setMaxWriterId(id);
         }
-        return cache.getMaxWriterId(); // что вернуть тут?
+        return  0L; // что вернуть тут?
     }
 
     private Long getMaxPostId(){
@@ -55,10 +49,8 @@ public class CacheServiceImpl implements CacheService {
          //   long id = posts.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
             long id = posts.stream().mapToLong(Post::getId).summaryStatistics().getMax();
             cache.setMaxPostId(id);
-        }else {
-            cache.setMaxPostId(0);
         }
-        return cache.getMaxPostId(); // что вернуть тут?
+        return 0L;
     }
     private Long getMaxLabelId() {
         List<Label> labels = labelRepository.getAll();
@@ -66,10 +58,8 @@ public class CacheServiceImpl implements CacheService {
             long id = labels.stream().max((a,b) -> Math.toIntExact(a.getId() - b.getId())).get().getId();
 
             cache.setMaxLabelId(id);
-        }else {
-            cache.setMaxLabelId(0);
         }
-        return cache.getMaxLabelId(); // что вернуть тут?
+        return 0L;
     }
 
 }

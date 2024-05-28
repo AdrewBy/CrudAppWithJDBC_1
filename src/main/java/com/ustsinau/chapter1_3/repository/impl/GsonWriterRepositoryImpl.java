@@ -17,9 +17,9 @@ import java.util.List;
 
 public class GsonWriterRepositoryImpl implements WriterRepository {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private String FILE = "src/main/resources/writers.json";
+    private final String FILE = "src/main/resources/writers.json";
 
 
     @Override
@@ -32,7 +32,7 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
 
 
     @Override
-    public void update(Writer value) {
+    public void update(Writer value) throws NullPointerException{
 
         long id = value.getId();
         String newName = value.getFirstName();
@@ -43,12 +43,14 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
 
         Writer writer = writerList.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Автор с ID "
-                        + id + " не найден"));
+                .orElse(null);
 
-        writer.setFirstName(newName);
-        writer.setLastName(newLastName);
-        writer.setPosts(newPosts);
+        if (writer != null) {
+            writer.setFirstName(newName);
+            writer.setLastName(newLastName);
+            writer.setPosts(newPosts);
+        }
+
 
         saverFile(writerList);
     }
@@ -59,10 +61,12 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
 
         Writer writer = writerList.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Автор с ID "
-                        + id + " не найден"));
+                .orElse(null);
 
-        writer.setStatus(Status.DELETED);
+
+        if (writer != null) {
+            writer.setStatus(Status.DELETED);
+        }
 
         saverFile(writerList);
     }
@@ -89,12 +93,9 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
     public Writer getById(Long id) {
         List<Writer> writerList = getAll();
 
-        Writer writer = writerList.stream().
+        return writerList.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Автор с ID "
-                        + id + " не найден"));
-
-        return writer;
+                .orElse(null);
     }
 
     @Override

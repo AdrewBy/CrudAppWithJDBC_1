@@ -17,9 +17,9 @@ import java.util.List;
 
 public class GsonLabelRepository implements LabelRepository {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private String FILE = "src/main/resources/labels.json";
+    private final String FILE = "src/main/resources/labels.json";
 
     @Override
     public void create(Label value) {
@@ -38,10 +38,13 @@ public class GsonLabelRepository implements LabelRepository {
         List<Label> labels = getAll();
         Label label = labels.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID "
-                        + id + " не найден"));
+                .orElse(null);
+//                .orElseThrow(() -> new RuntimeException("Post с ID "
+//                        + id + " не найден"));
 
-        label.setName(newName);
+        if (label != null) {
+            label.setName(newName);
+        }
 
         saverFile(labels);
     }
@@ -51,8 +54,7 @@ public class GsonLabelRepository implements LabelRepository {
         List<Label> labels = getAll();
         Label label = labels.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID "
-                        + id + " не найден"));
+                .orElse(null);
 
         labels.remove(label);
         saverFile(labels);
@@ -64,8 +66,7 @@ public class GsonLabelRepository implements LabelRepository {
         List<Label> labels = getAll();
         Label label = labels.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID "
-                        + id + " не найден"));
+                .orElse(null);
 
         return label;
     }

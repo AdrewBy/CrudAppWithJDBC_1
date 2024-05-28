@@ -1,8 +1,8 @@
 package com.ustsinau.chapter1_3;
 
 
-import com.ustsinau.chapter1_3.services.CacheService;
-import com.ustsinau.chapter1_3.services.impl.CacheServiceImpl;
+import com.ustsinau.chapter1_3.repository.GeneratorId;
+import com.ustsinau.chapter1_3.repository.impl.GeneratorIdImpl;
 import com.ustsinau.chapter1_3.view.HeadConsole;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-        CacheService cacheService = new CacheServiceImpl();
+        GeneratorId cacheService = new GeneratorIdImpl();
         cacheService.initCache();
 
         HeadConsole headConsole = new HeadConsole();

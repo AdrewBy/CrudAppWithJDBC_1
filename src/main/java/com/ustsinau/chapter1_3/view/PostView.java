@@ -2,12 +2,20 @@ package com.ustsinau.chapter1_3.view;
 
 
 import com.ustsinau.chapter1_3.controller.PostController;
+import com.ustsinau.chapter1_3.models.Label;
 import com.ustsinau.chapter1_3.models.Post;
+import com.ustsinau.chapter1_3.repository.LabelRepository;
+import com.ustsinau.chapter1_3.repository.impl.GsonLabelRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class PostView {
+
+    private final LabelRepository label = new GsonLabelRepository();
     private final Scanner scanner = new Scanner(System.in);
     private final HeadConsole headConsole = new HeadConsole();
     public static final String ACTIONS_POST = "Введите действие:\n" +
@@ -42,7 +50,16 @@ public class PostView {
         scanner.nextLine();
         System.out.println("Введите id лэйблов для нового поста через ПРОБЕЛ:");
         String labelsUp = scanner.nextLine();
-        postCont.updatePost(index, title, content, labelsUp);
+
+        List<Label> labelsPost = new ArrayList<>();
+
+        long[] numArr = Arrays.stream(labelsUp.split(" ")).mapToLong(e -> Long.parseLong(e)).toArray();
+
+        for (int i = 0; i < numArr.length; i++) {       // подумать над этим
+            labelsPost.add(label.getById(numArr[i]));
+        }
+
+        postCont.updatePost(index, title, content, labelsPost);
         headConsole.run();
     }
 

@@ -6,10 +6,10 @@ import com.ustsinau.chapter1_3.repository.LabelRepository;
 
 import java.util.List;
 
-import static com.ustsinau.chapter1_3.services.impl.CacheServiceImpl.cache;
+import static com.ustsinau.chapter1_3.repository.impl.GeneratorIdImpl.cache;
 
 public class LabelController {
-    private LabelRepository label = new GsonLabelRepository();
+    private final LabelRepository label = new GsonLabelRepository();
 
 
     public List<Label> showAll() {
@@ -25,7 +25,6 @@ public class LabelController {
 
 
     public void updateLabel(Label labelNew) {
-
         label.update(labelNew);
     }
 
@@ -35,7 +34,6 @@ public class LabelController {
     }
 
     public Label getValueByIndex(Long id) {
-
         return label.getById(id);
     }
 

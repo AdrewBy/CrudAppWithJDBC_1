@@ -18,8 +18,8 @@ import java.util.List;
 
 public class GsonPostRepositoryImpl implements PostRepository {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private String FILE = "src/main/resources/posts.json";
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final String FILE = "src/main/resources/posts.json";
 
 
     @Override
@@ -39,11 +39,14 @@ public class GsonPostRepositoryImpl implements PostRepository {
 
         List<Post> posts = getAll();
         Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID " + id + " не найден"));
+                .orElse(null);
 
-        post.setTitle(newTitle);
-        post.setContent(newContent);
-        post.setLabels(newLabels);
+        if (post != null) {
+            post.setTitle(newTitle);
+            post.setContent(newContent);
+            post.setLabels(newLabels);
+        }
+
 
         saverFile(posts);
 
@@ -54,7 +57,7 @@ public class GsonPostRepositoryImpl implements PostRepository {
         List<Post> posts = getAll();
 
         Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID " + id + " не найден"));
+                .orElse(null);
 
         posts.remove(post);
         saverFile(posts);
@@ -65,7 +68,7 @@ public class GsonPostRepositoryImpl implements PostRepository {
         List<Post> posts = getAll();
 
         Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElseThrow(() -> new RuntimeException("Post с ID " + id + " не найден"));
+                .orElse(null);
 
         return post;
     }
