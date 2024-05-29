@@ -1,62 +1,45 @@
 [
   {
     "ID": 1,
-    "FirstName": "gthsq",
-    "LastName": "SecondName",
-    "Posts list": [
-      {
-        "ID": 1,
-        "Title": "fdsd2",
-        "Content": "sdcdsv23"
-      },
-      {
-        "ID": 2,
-        "Title": "gdg",
-        "Content": "scfs"
-      }
-    ],
-    "Status": "ACTIVE"
-  },
-  {
-    "ID": 2,
-    "FirstName": "свс",
-    "LastName": "мвама",
-    "Status": "DELETED"
-  },
-  {
-    "ID": 3,
-    "FirstName": "fsdf",
-    "LastName": "fsfsdf",
+    "FirstName": "пам",
+    "LastName": "ивив",
+    "Status": "DELETED",
     "Posts list": [
       {
         "ID": 3,
         "Title": "fsfv",
         "Content": "vfvf"
-      },
+      }
+    ]
+  },
+  {
+    "ID": 2,
+    "FirstName": "ааааа",
+    "LastName": "ввввв",
+    "Status": "ACTIVE"
+  },
+  {
+    "ID": 3,
+    "FirstName": "twtwe",
+    "LastName": "twetewtew",
+    "Status": "ACTIVE",
+    "Posts list": [
       {
         "ID": 4,
-        "Title": "sfsdff",
-        "Content": "gsnhn"
+        "Title": "цуккуцк",
+        "Content": "мамвам",
+        "Labels list": [
+          {
+            "ID": 3,
+            "Name": "vdfvdfv"
+          }
+        ]
+      },
+      {
+        "ID": 5,
+        "Title": "vdbgbf",
+        "Content": "vdfv"
       }
-    ],
-    "Status": "ACTIVE"
-  },
-  {
-    "ID": 4,
-    "FirstName": "Sidr",
-    "LastName": "Sidorov",
-    "Status": "ACTIVE"
-  },
-  {
-    "ID": 5,
-    "FirstName": "Best",
-    "LastName": "Better",
-    "Status": "DELETED"
-  },
-  {
-    "ID": 6,
-    "FirstName": "vdfv",
-    "LastName": "bgbhf",
-    "Status": "ACTIVE"
+    ]
   }
 ]

@@ -51,11 +51,13 @@ public class WriterView {
         String postsUp = scanner.nextLine();
         List<Post> postsWriter = new ArrayList<>();
 
-        long[] numArr = Arrays.stream(postsUp.split(" ")).mapToLong(e -> Long.parseLong(e)).toArray();
-
+        long[] numArr = Arrays.stream(postsUp.split(" ")).mapToLong(Long::parseLong).toArray();
+        if (numArr.length == 0) {
+            System.out.println("Укажите пост");
+        }
         for (long l : numArr) {                               // подумать над этим
 
-                postsWriter.add(posts.getById(l));
+            postsWriter.add(posts.getById(l));
 
         }
         writerControllerContr.updateWriter(indexUp, nameWrUp, lastNameWrUP, postsWriter);

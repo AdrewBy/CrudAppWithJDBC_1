@@ -11,12 +11,6 @@ public class Label {
     @SerializedName("Name")
     private  String name;
 
-    private Status status;
-
-    public Status getStatus() {
-        return status;
-    }
-
     public Label() {
     }
 

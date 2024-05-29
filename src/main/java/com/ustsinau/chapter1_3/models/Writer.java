@@ -15,10 +15,11 @@ public class Writer {
     private String firstName;
     @SerializedName("LastName")
     private String lastName;
-    @SerializedName("Posts list")
-    private List<Post> posts;
     @SerializedName("Status")
     Status status ;
+    @SerializedName("Posts list")
+    private List<Post> posts;
+
 
     public Writer() {
     }
@@ -97,8 +98,8 @@ public class Writer {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", posts=" + posts +
                 ", status=" + status +
+                ", posts=" + posts +
                 '}';
     }
 }

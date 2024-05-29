@@ -37,16 +37,9 @@ public class GsonPostRepositoryImpl implements PostRepository {
     @Override
     public Post update(Post value) {
 
-        String newTitle = value.getTitle();
-        String newContent = value.getContent();
-        List<Label> newLabels = value.getLabels();
-
         List<Post> posts = getAllPostsInternal()
                 .stream().map(l-> {
                     if (value.getId()==l.getId()){
-                        value.setTitle(newTitle);
-                        value.setContent(newContent);
-                        value.setLabels(newLabels);
                         return value;
                     }
                    return l;

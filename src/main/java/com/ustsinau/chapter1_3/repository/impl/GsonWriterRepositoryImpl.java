@@ -38,16 +38,12 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
     @Override
     public Writer update(Writer value) throws NullPointerException {
 
-        String newName = value.getFirstName();
-        String newLastName = value.getLastName();
-        List<Post> newPosts = value.getPosts();
-
         List<Writer> writerList = getAllWritersInternal().stream()
-                .map(e-> {
+                .map(e -> {
                     if (value.getId() == e.getId()) {
-                        value.setFirstName(newName);
-                        value.setLastName(newLastName);
-                        value.setPosts(newPosts);
+
+                        value.setStatus(e.getStatus());
+
                         return value;
                     }
                     return e;

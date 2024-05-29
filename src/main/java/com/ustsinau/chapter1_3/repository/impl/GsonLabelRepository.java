@@ -26,8 +26,8 @@ public class GsonLabelRepository implements LabelRepository {
 
     @Override
     public Label create(Label label) {
-        List<Label> labels = getAll();
-        long maxLabelId = getNewId(getAll());
+        List<Label> labels = getAllLabelsInternal();
+        long maxLabelId = getNewId(getAllLabelsInternal());
         label.setId(maxLabelId);
         labels.add(label);
 

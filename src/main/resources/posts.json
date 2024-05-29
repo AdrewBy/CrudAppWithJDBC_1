@@ -17,8 +17,14 @@
   },
   {
     "ID": 4,
-    "Title": "sfsdff",
-    "Content": "gsnhn"
+    "Title": "цуккуцк",
+    "Content": "мамвам",
+    "Labels list": [
+      {
+        "ID": 3,
+        "Name": "vdfvdfv"
+      }
+    ]
   },
   {
     "ID": 5,
