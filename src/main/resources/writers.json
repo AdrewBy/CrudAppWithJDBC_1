@@ -51,6 +51,12 @@
     "ID": 5,
     "FirstName": "Best",
     "LastName": "Better",
+    "Status": "DELETED"
+  },
+  {
+    "ID": 6,
+    "FirstName": "vdfv",
+    "LastName": "bgbhf",
     "Status": "ACTIVE"
   }
 ]

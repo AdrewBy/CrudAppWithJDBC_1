@@ -6,7 +6,7 @@ import com.ustsinau.chapter1_3.view.HeadConsole;
 import java.io.IOException;
 
 
-public class Main {
+public class AppRunner {
     public static void main(String[] args) {
 
         HeadConsole headConsole = new HeadConsole();

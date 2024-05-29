@@ -4,16 +4,12 @@ import java.util.List;
 
 public interface GenericRepository<T, ID> {
 
+    T create(T value);
 
-
-    void create(T value);
-
-    void update(T value) ;
+    T update(T value) ;
 
     void delete(ID id);
     T getById(ID id) ;
-
-    void saverFile(List<T> value);
 
     List<T> getAll() ;
 }

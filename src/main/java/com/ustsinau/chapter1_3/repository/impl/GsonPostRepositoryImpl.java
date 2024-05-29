@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GsonPostRepositoryImpl implements PostRepository {
@@ -24,57 +25,53 @@ public class GsonPostRepositoryImpl implements PostRepository {
 
 
     @Override
-    public void create(Post value) {
-        List<Post> posts = getAll();
-        long maxLabelId = getNewId(getAll());
-        value.setId(maxLabelId);
-        posts.add(value);
-        saverFile(posts);
-    }
-
-    @Override
-    public void update(Post value) {
-
-        long id = value.getId();
-        String newTitle = value.getTitle();
-        String newContent = value.getContent();
-        List<Label> newLabels = value.getLabels();
-
-        List<Post> posts = getAll();
-        Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
-        if (post != null) {
-            post.setTitle(newTitle);
-            post.setContent(newContent);
-            post.setLabels(newLabels);
-        }
-        saverFile(posts);
-    }
-
-    @Override
-    public void delete(Long id) {
-        List<Post> posts = getAll();
-
-        Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
-        posts.remove(post);
-        saverFile(posts);
-    }
-
-    @Override
-    public Post getById(Long id) {
-        List<Post> posts = getAll();
-
-        Post post = posts.stream().filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
+    public Post create(Post post) {
+        List<Post> posts = getAllPostsInternal();
+        long maxLabelId = getNewId(getAllPostsInternal());
+        post.setId(maxLabelId);
+        posts.add(post);
+        writerPostsToFile(posts);
         return post;
     }
 
     @Override
-    public void saverFile(List<Post> postList) {
+    public Post update(Post value) {
+
+        String newTitle = value.getTitle();
+        String newContent = value.getContent();
+        List<Label> newLabels = value.getLabels();
+
+        List<Post> posts = getAllPostsInternal()
+                .stream().map(l-> {
+                    if (value.getId()==l.getId()){
+                        value.setTitle(newTitle);
+                        value.setContent(newContent);
+                        value.setLabels(newLabels);
+                        return value;
+                    }
+                   return l;
+                }).collect(Collectors.toList());
+
+        writerPostsToFile(posts);
+        return value;
+    }
+
+    @Override
+    public void delete(Long id) {
+        List<Post> posts = getAllPostsInternal();
+        posts.removeIf(l -> l.getId() == id);
+        writerPostsToFile(posts);
+    }
+
+    @Override
+    public Post getById(Long id) {
+
+        return getAllPostsInternal().stream()
+                .filter(e -> e.getId() == id).findFirst()
+                .orElse(null);
+    }
+
+    private void writerPostsToFile(List<Post> postList) {
 
         try (FileWriter fileWriter = new FileWriter(FILE)) {
             gson.toJson(postList, fileWriter);
@@ -83,8 +80,7 @@ public class GsonPostRepositoryImpl implements PostRepository {
         }
     }
 
-    @Override
-    public List<Post> getAll() {
+    private List<Post> getAllPostsInternal() {
         List<Post> postAll;
         try (FileReader reader = new FileReader(FILE)) {
             Type listType = new TypeToken<List<Post>>() {
@@ -99,9 +95,15 @@ public class GsonPostRepositoryImpl implements PostRepository {
         }
         return postAll;
     }
+
+    @Override
+    public List<Post> getAll() {
+        return getAllPostsInternal();
+    }
+
     private Long getNewId(List<Post> posts) {
-        return   posts.stream().max(Comparator.comparingLong(Post::getId))
-                .map(post -> post.getId()+1).orElse((1L));
+        return posts.stream().max(Comparator.comparingLong(Post::getId))
+                .map(post -> post.getId() + 1).orElseGet(()->1L);
     }
 }
 

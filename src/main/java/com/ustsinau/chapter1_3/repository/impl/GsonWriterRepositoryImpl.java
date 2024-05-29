@@ -4,7 +4,6 @@ package com.ustsinau.chapter1_3.repository.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.ustsinau.chapter1_3.models.Label;
 import com.ustsinau.chapter1_3.models.Post;
 import com.ustsinau.chapter1_3.models.Status;
 import com.ustsinau.chapter1_3.models.Writer;
@@ -15,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GsonWriterRepositoryImpl implements WriterRepository {
@@ -25,64 +25,53 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
 
 
     @Override
-    public void create(Writer value) {
-        List<Writer> writerList = getAll();
-        long maxWriterlId = getNewId(getAll());
-        value.setId(maxWriterlId);
-
-
+    public Writer create(Writer value) {
+        List<Writer> writerList = getAllWritersInternal();
+        long maxWriterId = getNewId(getAllWritersInternal());
+        value.setId(maxWriterId);
         writerList.add(value);
-
-        saverFile(writerList);
+        writerToFile(writerList);
+        return value;
     }
 
 
     @Override
-    public void update(Writer value) throws NullPointerException{
+    public Writer update(Writer value) throws NullPointerException {
 
-        long id = value.getId();
         String newName = value.getFirstName();
         String newLastName = value.getLastName();
         List<Post> newPosts = value.getPosts();
 
-        List<Writer> writerList = getAll();
+        List<Writer> writerList = getAllWritersInternal().stream()
+                .map(e-> {
+                    if (value.getId() == e.getId()) {
+                        value.setFirstName(newName);
+                        value.setLastName(newLastName);
+                        value.setPosts(newPosts);
+                        return value;
+                    }
+                    return e;
+                }).collect(Collectors.toList());
 
-        Writer writer = writerList.stream().
-                filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
-        if (writer != null) {
-            writer.setFirstName(newName);
-            writer.setLastName(newLastName);
-            writer.setPosts(newPosts);
-        }
-
-
-        saverFile(writerList);
+        writerToFile(writerList);
+        return value;
     }
 
     @Override
     public void delete(Long id) {
-        List<Writer> writerList = getAll();
+        List<Writer> writerList = getAllWritersInternal();
 
-        Writer writer = writerList.stream().
+        writerList.stream().
                 filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
+                .ifPresent(writer -> writer.setStatus(Status.DELETED));
 
-
-        if (writer != null) {
-            writer.setStatus(Status.DELETED);
-        }
-
-        saverFile(writerList);
+        writerToFile(writerList);
     }
 
-    @Override
-    public List<Writer> getAll() {
+    private List<Writer> getAllWritersInternal() {
         List<Writer> writerALL;
 
         try (FileReader reader = new FileReader(FILE)) {
-
             Type listType = new TypeToken<List<Writer>>() {
             }.getType();
             writerALL = gson.fromJson(reader, listType);
@@ -96,6 +85,11 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
     }
 
     @Override
+    public List<Writer> getAll() {
+        return getAllWritersInternal();
+    }
+
+    @Override
     public Writer getById(Long id) {
         List<Writer> writerList = getAll();
 
@@ -104,20 +98,18 @@ public class GsonWriterRepositoryImpl implements WriterRepository {
                 .orElse(null);
     }
 
-    @Override
-    public void saverFile(List<Writer> writerList) {
+    public void writerToFile(List<Writer> writerList) {
 
         try (FileWriter fileWriter = new FileWriter(FILE)) {
-
             gson.toJson(writerList, fileWriter);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     private Long getNewId(List<Writer> writers) {
-        return   writers.stream().max(Comparator.comparingLong(Writer::getId))
-                .map(writer -> writer.getId()+1).orElse((1L));
+        return writers.stream().max(Comparator.comparingLong(Writer::getId))
+                .map(writer -> writer.getId() + 1).orElseGet(() -> 1L);
     }
 
 }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ustsinau.chapter1_3.models.Label;
+import com.ustsinau.chapter1_3.models.Status;
 import com.ustsinau.chapter1_3.repository.LabelRepository;
 
 
@@ -14,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GsonLabelRepository implements LabelRepository {
@@ -23,59 +25,50 @@ public class GsonLabelRepository implements LabelRepository {
     private final String FILE = "src/main/resources/labels.json";
 
     @Override
-    public void create(Label label) {
+    public Label create(Label label) {
         List<Label> labels = getAll();
         long maxLabelId = getNewId(getAll());
         label.setId(maxLabelId);
         labels.add(label);
 
-        saverFile(labels);
-    }
-
-    @Override
-    public void update(Label newLabel) {
-
-        long id = newLabel.getId();
-        String newName = newLabel.getName();
-
-        List<Label> labels = getAll();
-        Label label = labels.stream().
-                filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-//                .orElseThrow(() -> new RuntimeException("Post с ID "
-//                        + id + " не найден"));
-
-        if (label != null) {
-            label.setName(newName);
-        }
-
-        saverFile(labels);
-    }
-
-    @Override
-    public void delete(Long id) {
-        List<Label> labels = getAll();
-        Label label = labels.stream().
-                filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
-        labels.remove(label);
-        saverFile(labels);
-    }
-
-    @Override
-    public Label getById(Long id) {
-
-        List<Label> labels = getAll();
-        Label label = labels.stream().
-                filter(e -> e.getId() == id).findFirst()
-                .orElse(null);
-
+        writerLabelsToFile(labels);
         return label;
     }
 
     @Override
+    public Label update(Label newLabel) {
+        List<Label> labels = getAllLabelsInternal().stream().map(l -> {
+            if(newLabel.getId() == l.getId()) {
+                return newLabel;
+            }
+            return l;
+        }).collect(Collectors.toList());
+
+        writerLabelsToFile(labels);
+        return newLabel;
+    }
+
+    @Override
+    public void delete(Long id) {
+        List<Label> labels = getAllLabelsInternal();
+        labels.removeIf(l -> l.getId() == id);
+        writerLabelsToFile(labels);
+    }
+
+    @Override
+    public Label getById(Long id) {
+        return getAllLabelsInternal().stream().
+                filter(e -> e.getId() == id).findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public List<Label> getAll() {
+      return getAllLabelsInternal();
+    }
+
+
+    private List<Label> getAllLabelsInternal() {
         List<Label> labels;
 
         try (FileReader reader = new FileReader(FILE)) {
@@ -91,12 +84,9 @@ public class GsonLabelRepository implements LabelRepository {
         return labels;
     }
 
-   public void saverFile(List<Label> labelList) {
-
+    private void writerLabelsToFile(List<Label> labelList) {
         try (FileWriter fileWriter = new FileWriter(FILE)) {
-
             gson.toJson(labelList, fileWriter);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
