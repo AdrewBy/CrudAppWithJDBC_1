@@ -1,8 +1,8 @@
-package com.ustsinau.chapter1_3.view;
+package com.ustsinau.chapter2_2.view;
 
 
-import com.ustsinau.chapter1_3.controller.LabelController;
-import com.ustsinau.chapter1_3.models.Label;
+import com.ustsinau.chapter2_2.controller.LabelController;
+import com.ustsinau.chapter2_2.models.Label;
 
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
-package com.ustsinau.chapter1_3;
+package com.ustsinau.chapter2_2;
 
 
-import com.ustsinau.chapter1_3.view.HeadConsole;
+import com.ustsinau.chapter2_2.view.HeadConsole;
 
 import java.io.IOException;
 

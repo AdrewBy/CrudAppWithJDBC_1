@@ -1,23 +1,16 @@
-package com.ustsinau.chapter1_3.models;
+package com.ustsinau.chapter2_2.models;
 
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Objects;
 
 
-
 public class Writer {
 
-    @SerializedName("ID")
+
     private  long id;
-    @SerializedName("FirstName")
     private String firstName;
-    @SerializedName("LastName")
     private String lastName;
-    @SerializedName("Status")
-    Status status ;
-    @SerializedName("Posts list")
     private List<Post> posts;
 
 
@@ -31,10 +24,10 @@ public class Writer {
         this.posts = posts;
     }
 
-    public Writer(String firstName, String lastName, Status status) {
+    public Writer(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.status = status;
+
     }
 
     public  long getId() {
@@ -69,27 +62,20 @@ public class Writer {
         this.posts = posts;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Writer writer = (Writer) o;
-        return id == writer.id && Objects.equals(firstName, writer.firstName)
+        return id == writer.id
+                && Objects.equals(firstName, writer.firstName)
                 && Objects.equals(lastName, writer.lastName)
-                && Objects.equals(posts, writer.posts) && status == writer.status;
+                && Objects.equals(posts, writer.posts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, posts, status);
+        return Objects.hash(id, firstName, lastName, posts);
     }
 
     @Override
@@ -98,8 +84,7 @@ public class Writer {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", status=" + status +
-                ", posts=" + posts +
+                ",\n  posts:\n    " + posts +
                 '}';
     }
 }

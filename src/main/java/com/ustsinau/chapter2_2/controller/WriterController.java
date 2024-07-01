@@ -1,15 +1,14 @@
-package com.ustsinau.chapter1_3.controller;
+package com.ustsinau.chapter2_2.controller;
 
-import com.ustsinau.chapter1_3.models.Post;
-import com.ustsinau.chapter1_3.models.Status;
-import com.ustsinau.chapter1_3.models.Writer;
-import com.ustsinau.chapter1_3.repository.WriterRepository;
-import com.ustsinau.chapter1_3.repository.impl.GsonWriterRepositoryImpl;
+import com.ustsinau.chapter2_2.models.Post;
+import com.ustsinau.chapter2_2.models.Writer;
+import com.ustsinau.chapter2_2.repository.WriterRepository;
+import com.ustsinau.chapter2_2.repository.impl.JdbcWriterRepositoryImpl;
 
 import java.util.List;
 
 public class WriterController {
-    private final WriterRepository writers = new GsonWriterRepositoryImpl();
+    private final WriterRepository writers = new JdbcWriterRepositoryImpl();
 
     public List<Writer> showAll() {
         return writers.getAll();
@@ -17,7 +16,7 @@ public class WriterController {
 
 
     public void createWriterWithoutPost(String firstName, String lastName) {
-        writers.create(new Writer(firstName, lastName, Status.ACTIVE));
+        writers.create(new Writer(firstName, lastName));
 
     }
 

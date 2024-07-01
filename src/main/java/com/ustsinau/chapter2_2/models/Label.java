@@ -1,16 +1,13 @@
-package com.ustsinau.chapter1_3.models;
+package com.ustsinau.chapter2_2.models;
 
-import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
 public class Label {
 
-    @SerializedName("ID")
-    private  long id;
-    @SerializedName("Name")
-    private  String name;
 
+    private  long id;
+    private  String name;
     public Label() {
     }
 

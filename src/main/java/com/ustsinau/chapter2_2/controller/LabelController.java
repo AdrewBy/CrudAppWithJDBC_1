@@ -1,14 +1,14 @@
-package com.ustsinau.chapter1_3.controller;
+package com.ustsinau.chapter2_2.controller;
 
-import com.ustsinau.chapter1_3.models.Label;
-import com.ustsinau.chapter1_3.repository.impl.GsonLabelRepository;
-import com.ustsinau.chapter1_3.repository.LabelRepository;
+import com.ustsinau.chapter2_2.models.Label;
+import com.ustsinau.chapter2_2.repository.impl.JdbcLabelRepository;
+import com.ustsinau.chapter2_2.repository.LabelRepository;
 
 import java.util.List;
 
 
 public class LabelController {
-    private final LabelRepository label = new GsonLabelRepository();
+    private final LabelRepository label = new JdbcLabelRepository();
 
 
     public List<Label> showAll() {

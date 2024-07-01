@@ -1,10 +1,10 @@
-package com.ustsinau.chapter1_3.repository;
+package com.ustsinau.chapter2_2.repository;
 
 import java.util.List;
 
 public interface GenericRepository<T, ID> {
 
-    T create(T value);
+    T create(T value) ;
 
     T update(T value) ;
 

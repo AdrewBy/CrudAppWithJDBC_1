@@ -1,11 +1,11 @@
-package com.ustsinau.chapter1_3.view;
+package com.ustsinau.chapter2_2.view;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-import static com.ustsinau.chapter1_3.view.LabelView.ACTIONS_LABEL;
-import static com.ustsinau.chapter1_3.view.PostView.ACTIONS_POST;
-import static com.ustsinau.chapter1_3.view.WriterView.ACTIONS_WRITER;
+import static com.ustsinau.chapter2_2.view.LabelView.ACTIONS_LABEL;
+import static com.ustsinau.chapter2_2.view.PostView.ACTIONS_POST;
+import static com.ustsinau.chapter2_2.view.WriterView.ACTIONS_WRITER;
 
 public class HeadConsole {
     private final Scanner scanner =  new Scanner(System.in);
@@ -69,7 +69,7 @@ public class HeadConsole {
                 postView.deletePost();
                 break;
             case "4":
-                postView.getIdPost();
+                postView.getPostById();
                 break;
             case "5":
                 postView.showAllPosts();
