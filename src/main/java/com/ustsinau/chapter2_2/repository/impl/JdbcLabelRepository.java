@@ -12,10 +12,10 @@ import java.util.List;
 
 public class JdbcLabelRepository implements LabelRepository {
 
-    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/CrudAppWithJDBC_1";
+    private final String DATABASE_URL = "jdbc:mysql://localhost:3306/CrudAppWithJDBC_1";
     static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    static final String USER = "root";
-    static final String PASSWORD = "mysql";
+    private final String USER = "root";
+    private final String PASSWORD = "mysql";
 
     static {
         try {
@@ -27,7 +27,7 @@ public class JdbcLabelRepository implements LabelRepository {
 
 
     @Override
-    public Label create(Label label) {
+    public Label create(Label label) throws SQLException {
         String sql = "Insert into labels (name) values (?)";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,14 +38,12 @@ public class JdbcLabelRepository implements LabelRepository {
             if (generatedKeys.next()) {
                 label.setId(generatedKeys.getLong(1));
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
         return label;
     }
 
     @Override
-    public Label update(Label newLabel) {
+    public Label update(Label newLabel) throws SQLException {
         String sql = "Update labels set name =? where id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -54,25 +52,21 @@ public class JdbcLabelRepository implements LabelRepository {
             statement.setLong(2, newLabel.getId());
             statement.executeUpdate();
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
         return newLabel;
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException {
         String sql = "Delete from labels where id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
            statement.setLong(1,id);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Label getById(Long id) {
+    public Label getById(Long id) throws SQLException {
        String sql = "Select * from labels where id = ?";
        Label label = null;
        try (Connection connection = DriverManager.getConnection(DATABASE_URL,USER,PASSWORD);
@@ -84,19 +78,17 @@ public class JdbcLabelRepository implements LabelRepository {
                label.setId(resultSet.getLong("id"));
                label.setName(resultSet.getString("name"));
            }
-       } catch (SQLException e) {
-           throw new RuntimeException(e);
        }
        return label;
     }
 
     @Override
-    public List<Label> getAll() {
+    public List<Label> getAll() throws SQLException {
         return getAllLabelsInternal();
     }
 
 
-    private List<Label> getAllLabelsInternal() {
+    private List<Label> getAllLabelsInternal() throws SQLException {
         String sql = "Select * from labels";
         List<Label> labels = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DATABASE_URL,USER,PASSWORD);
@@ -108,8 +100,6 @@ public class JdbcLabelRepository implements LabelRepository {
                 label.setName(resultSet.getString("name"));
                 labels.add(label);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
         return labels;
     }

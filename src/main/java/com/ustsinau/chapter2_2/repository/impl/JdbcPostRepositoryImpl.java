@@ -12,11 +12,11 @@ import java.util.List;
 
 public class JdbcPostRepositoryImpl implements PostRepository {
 
-    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/CrudAppWithJDBC_1";
+    private final String DATABASE_URL = "jdbc:mysql://localhost:3306/CrudAppWithJDBC_1";
     static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
 
-    static final String USER = "root";
-    static final String PASSWORD = "mysql";
+    private final String USER = "root";
+    private final String PASSWORD = "mysql";
 
     static {
         try {
@@ -27,11 +27,10 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post create(Post post) {
+    public Post create(Post post) throws SQLException {
         String sql = "INSERT INTO posts (content, postStatus, created, updated) VALUES (?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
 
             statement.setString(1, post.getContent());
             statement.setString(2, post.getPostStatus().name());
@@ -46,8 +45,6 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
             savePostLabels(connection, post);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return post;
     }
@@ -72,7 +69,7 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post update(Post post) {
+    public Post update(Post post) throws SQLException {
         String sql = "UPDATE posts SET content = ?, postStatus = ?, updated = ? WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -86,8 +83,6 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             deletePostLabels(connection, post);
             savePostLabels(connection, post);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return post;
     }
@@ -95,19 +90,17 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws SQLException {
         String sql = "DELETE FROM posts WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
-    public Post getById(Long id) {
+    public Post getById(Long id) throws SQLException {
         String sql = "SELECT * FROM posts WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -116,14 +109,12 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             if (resultSet.next()) {
                 return mapResultSetToPost(resultSet, connection);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public List<Post> getAll() {
+    public List<Post> getAll() throws SQLException {
         List<Post> posts = new ArrayList<>();
         String sql = "SELECT * FROM posts";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
@@ -133,8 +124,6 @@ public class JdbcPostRepositoryImpl implements PostRepository {
                 Post post = mapResultSetToPost(resultSet, connection);
                 posts.add(post);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return posts;
     }

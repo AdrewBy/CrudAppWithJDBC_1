@@ -84,7 +84,7 @@ public class Writer {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ",\n  posts:\n    " + posts +
+                ",\n  posts:" + posts +
                 '}';
     }
 }
