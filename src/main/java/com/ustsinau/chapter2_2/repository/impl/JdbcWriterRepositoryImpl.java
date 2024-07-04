@@ -1,7 +1,6 @@
 package com.ustsinau.chapter2_2.repository.impl;
 
 
-import com.ustsinau.chapter2_2.models.Label;
 import com.ustsinau.chapter2_2.models.Post;
 import com.ustsinau.chapter2_2.models.PostStatus;
 import com.ustsinau.chapter2_2.models.Writer;
@@ -15,27 +14,12 @@ import java.util.List;
 
 public class JdbcWriterRepositoryImpl implements WriterRepository {
 
-    private final String DATABASE_URL = "jdbc:mysql://localhost:3306/CrudAppWithJDBC_1";
-    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-
-    private final String USER = "root";
-    private final String PASSWORD = "mysql";
-
-    static {
-        try {
-            Class.forName(JDBC_DRIVER);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Override
-    public Writer create(Writer writer) throws SQLException {
+    public Writer create(Writer writer)  {
 
         String sql = "INSERT INTO writers (firstName, lastName) VALUES (?, ?)";
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatementWithGenerated(sql)) {
             statement.setString(1, writer.getFirstName());
             statement.setString(2, writer.getLastName());
             statement.executeUpdate();
@@ -44,6 +28,8 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
             if (generatedKeys.next()) {
                 writer.setId(generatedKeys.getLong(1));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return writer;
     }
@@ -51,16 +37,15 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
 
 
     @Override
-    public Writer update(Writer writer) throws SQLException {
+    public Writer update(Writer writer)  {
 
         String updateWriterSql = "UPDATE Writers SET firstName = ?, lastName = ? WHERE id = ?";
         String updatePostSql = "UPDATE Posts SET writer_id = ? WHERE id = ?";
         String clearWriterPostsSql = "UPDATE Posts SET writer_id = NULL WHERE writer_id = ?";
 
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement updateWriterStatement = connection.prepareStatement(updateWriterSql);
-             PreparedStatement updatePostStatement = connection.prepareStatement(updatePostSql);
-             PreparedStatement clearWriterPostsStatement = connection.prepareStatement(clearWriterPostsSql)) {
+        try (PreparedStatement updateWriterStatement = DatabaseConnection.getInstance().getPreparedStatement(updateWriterSql);
+             PreparedStatement updatePostStatement = DatabaseConnection.getInstance().getPreparedStatement(updatePostSql);
+             PreparedStatement clearWriterPostsStatement = DatabaseConnection.getInstance().getPreparedStatement(clearWriterPostsSql)) {
 
             // Обновление информации об авторе
             updateWriterStatement.setString(1, writer.getFirstName());
@@ -78,32 +63,34 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
                 updatePostStatement.setLong(2, post.getId());
                 updatePostStatement.executeUpdate();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return writer;
     }
 
 
     @Override
-    public void delete(Long id) throws SQLException {
+    public void delete(Long id)  {
         String sql = "Delete from writers where id = ?";
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Writer> getAll() throws SQLException {
+    public List<Writer> getAll()  {
         return getAllWritersInternal();
     }
 
-    private List<Writer> getAllWritersInternal() throws SQLException {
+    private List<Writer> getAllWritersInternal() {
         String sql = "Select * from writers";
         List<Writer> writers = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             Statement statement = connection.createStatement()) {
+        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 Writer writer = new Writer();
@@ -112,15 +99,17 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
                 writer.setLastName(resultSet.getString("lastName"));
                 writers.add(writer);
 
-                List<Post> posts = getPostsForWriter(connection, writer.getId());
-                writer.setPosts(posts);
+        //        List<Post> posts = getPostsForWriter(connection, writer.getId());
+        //        writer.setPosts(posts);
             }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return writers;
     }
 
-    private List<Post> getPostsForWriter(Connection connection, long writer_id) throws SQLException {
+    private List<Post> getPostsForWriter(Connection connection, long writer_id)  {
         String sql = "Select * from posts where writer_id = ?";
         List<Post> posts = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -134,36 +123,21 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
                 post.setCreated(resultSet.getTimestamp("created"));
                 post.setUpdated(resultSet.getTimestamp("updated"));
                 posts.add(post);
-                List<Label> labels = getLabelsForPost(connection, post.getId());
-                post.setLabels(labels);
+     //           List<Label> labels = getLabelsForPost(connection, post.getId());
+     //           post.setLabels(labels);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return posts;
     }
 
-    private List<Label> getLabelsForPost(Connection connection, Long id) throws SQLException {
-        String sql = "SELECT l.id, l.name FROM labels l INNER JOIN post_label pl ON l.id = pl.label_id WHERE pl.post_id = ?";
-        List<Label> labels = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Label label = new Label();
-                label.setId(resultSet.getLong("id"));
-                label.setName(resultSet.getString("name"));
-                labels.add(label);
-            }
-        }
-        return labels;
-    }
-
-
     @Override
-    public Writer getById(Long id) throws SQLException {
-        String sql = "Select * from writers where id = ?";
+    public Writer getById(Long id)  {
+        String sql = "Select * from writers w join posts p on (w.id = p.writer_id) where w.id = ?";
         Writer writer = null;
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -172,9 +146,11 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
                 writer.setFirstName(resultSet.getString("firstName"));
                 writer.setLastName(resultSet.getString("lastName"));
 
-                List<Post> posts = getPostsForWriter(connection, writer.getId());
-                writer.setPosts(posts);
+        //        List<Post> posts = getPostsForWriter(connection, writer.getId());
+        //        writer.setPosts(posts);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return writer;
     }

@@ -27,7 +27,7 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post create(Post post) throws SQLException {
+    public Post create(Post post)  {
         String sql = "INSERT INTO posts (content, postStatus, created, updated) VALUES (?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -45,11 +45,13 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
             savePostLabels(connection, post);
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return post;
     }
 
-    private void savePostLabels(Connection connection, Post post) throws SQLException {
+    private void savePostLabels(Connection connection, Post post)  {
         String sql = "INSERT INTO post_label (post_id, label_id) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (Label label : post.getLabels()) {
@@ -58,18 +60,22 @@ public class JdbcPostRepositoryImpl implements PostRepository {
                 statement.executeUpdate();
             }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
-    private void deletePostLabels(Connection connection, Post post) throws SQLException {
+    private void deletePostLabels(Connection connection, Post post)  {
         String sql = "DELETE FROM post_label WHERE post_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, post.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Post update(Post post) throws SQLException {
+    public Post update(Post post)  {
         String sql = "UPDATE posts SET content = ?, postStatus = ?, updated = ? WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -83,6 +89,8 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             deletePostLabels(connection, post);
             savePostLabels(connection, post);
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return post;
     }
@@ -90,17 +98,19 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
 
     @Override
-    public void delete(Long id) throws SQLException {
+    public void delete(Long id)  {
         String sql = "DELETE FROM posts WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Post getById(Long id) throws SQLException {
+    public Post getById(Long id)  {
         String sql = "SELECT * FROM posts WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -109,12 +119,14 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             if (resultSet.next()) {
                 return mapResultSetToPost(resultSet, connection);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
 
     @Override
-    public List<Post> getAll() throws SQLException {
+    public List<Post> getAll()  {
         List<Post> posts = new ArrayList<>();
         String sql = "SELECT * FROM posts";
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
@@ -124,6 +136,8 @@ public class JdbcPostRepositoryImpl implements PostRepository {
                 Post post = mapResultSetToPost(resultSet, connection);
                 posts.add(post);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return posts;
     }

@@ -14,6 +14,7 @@
     <liquibase.version>4.28.0</liquibase.version>
     <slf4j.version>2.0.7</slf4j.version>
     <unit-jupiter.version>5.10.0</unit-jupiter.version>
+    <mysql-connector-java.version>8.0.33</mysql-connector-java.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -23,9 +24,8 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.33</version>
+      <version>${mysql-connector-java.version}</version>
     </dependency>
-
 
     <!-- SLF4J API for logging -->
     <dependency>
@@ -62,7 +62,6 @@
       <artifactId>liquibase-core</artifactId>
       <version>${liquibase.version}</version>
     </dependency>
-
 
   </dependencies>
 
