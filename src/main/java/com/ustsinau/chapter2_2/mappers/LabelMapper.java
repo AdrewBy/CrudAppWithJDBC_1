@@ -7,10 +7,14 @@ import java.sql.SQLException;
 
 
 public class LabelMapper {
-    public Label mapLabel(ResultSet resultSet, Label label) throws SQLException {
+    public void mapLabel(ResultSet resultSet, Label label) {
 
-        label.setId(resultSet.getLong("label_id"));
-        label.setName(resultSet.getString("name"));
-        return label;
+        try {
+            label.setName(resultSet.getString("name"));
+            label.setId(resultSet.getLong("label_id"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

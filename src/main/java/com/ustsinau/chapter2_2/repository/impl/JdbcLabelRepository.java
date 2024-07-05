@@ -1,6 +1,7 @@
 package com.ustsinau.chapter2_2.repository.impl;
 
 
+import com.ustsinau.chapter2_2.mappers.LabelMapper;
 import com.ustsinau.chapter2_2.models.Label;
 import com.ustsinau.chapter2_2.repository.LabelRepository;
 
@@ -12,11 +13,11 @@ import java.util.List;
 
 public class JdbcLabelRepository implements LabelRepository {
 
-
+    private final LabelMapper labelMapper = new LabelMapper();
 
     @Override
     public Label create(Label label)  {
-        String sql = "Insert into labels (name) values (?)";
+        String sql = "Insert into labels name values ?";
         try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
             statement.setString(1, label.getName());
             statement.executeUpdate();
@@ -66,8 +67,7 @@ public class JdbcLabelRepository implements LabelRepository {
            ResultSet resultSet = statement.executeQuery();
            if (resultSet.next()){
                label = new Label();
-               label.setId(resultSet.getLong("id"));
-               label.setName(resultSet.getString("name"));
+               labelMapper.mapLabel(resultSet,label);
            }
        } catch (SQLException e) {
            throw new RuntimeException(e);
@@ -88,8 +88,7 @@ public class JdbcLabelRepository implements LabelRepository {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 Label label = new Label();
-                label.setId(resultSet.getLong("id"));
-                label.setName(resultSet.getString("name"));
+                labelMapper.mapLabel(resultSet,label);
                 labels.add(label);
             }
         } catch (SQLException e) {

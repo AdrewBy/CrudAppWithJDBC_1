@@ -8,12 +8,16 @@ import java.util.ArrayList;
 
 public class WriterMapper {
 
-    public Writer mapWriter(ResultSet resultSet, Writer writer) throws SQLException {
+    public void mapWriter(ResultSet resultSet, Writer writer)  {
 
-        writer.setId(resultSet.getLong("writer_id"));
-        writer.setFirstName(resultSet.getString("firstName"));
-        writer.setLastName(resultSet.getString("lastName"));
-        writer.setPosts(new ArrayList<>());
-        return writer;
+
+        try {
+            writer.setId(resultSet.getLong("writer_id"));
+            writer.setFirstName(resultSet.getString("firstName"));
+            writer.setLastName(resultSet.getString("lastName"));
+            writer.setPosts(new ArrayList<>());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

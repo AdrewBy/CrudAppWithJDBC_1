@@ -61,10 +61,10 @@ public class WriterView {
                     if (post != null) {
                         postsWriter.add(post);
                     } else {
-                        System.out.println("Лэйбл с id=" + postId + " не найден.");
+                        System.out.println("Пост с id=" + postId + " не найден.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Некорректный формат id лэйбла: " + postId);
+                    System.out.println("Некорректный формат id поста: " + postId);
                 }
             }
         }

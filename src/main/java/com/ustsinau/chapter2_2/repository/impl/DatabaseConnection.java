@@ -8,10 +8,10 @@ import java.util.Properties;
 public class DatabaseConnection {
 
     private static final String PROPERTIES_FILE = "application-db.properties";
-    private static String DATABASE_URL;
-    private static String JDBC_DRIVER;
-    private static String USER;
-    private static String PASSWORD;
+    private final static String DATABASE_URL;
+    private final static String JDBC_DRIVER;
+    private final static String USER;
+    private final static String PASSWORD;
 
     static {
         try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {

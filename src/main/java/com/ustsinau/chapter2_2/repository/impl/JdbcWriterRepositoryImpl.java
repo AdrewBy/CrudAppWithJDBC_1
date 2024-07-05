@@ -11,10 +11,7 @@ import com.ustsinau.chapter2_2.repository.WriterRepository;
 
 import java.sql.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class JdbcWriterRepositoryImpl implements WriterRepository {
@@ -120,6 +117,7 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
                     writerMap.put(writerId, writer);
                 }
 
+
                 long postId = resultSet.getLong("post_id");
                 if (postId > 0) {
                     Post post = postMap.get(postId);
@@ -142,8 +140,12 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        for (Writer writer : writers) {
+            writer.getPosts().sort(Comparator.comparingLong(Post::getId));
+        }
         return writers;
     }
+
 
     @Override
     public Writer getById(Long id) {
