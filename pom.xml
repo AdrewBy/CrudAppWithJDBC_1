@@ -72,7 +72,7 @@
         <artifactId>liquibase-maven-plugin</artifactId>
         <version>${liquibase.version}</version>
         <configuration>
-          <changeLogFile>src/main/resources/db/master.xml</changeLogFile>
+          <changeLogFile>src/main/resources/db/db.changelog-master.xml</changeLogFile>
           <url>jdbc:mysql://localhost:3306/CrudAppWithJDBC_1</url>
           <username>root</username>
           <password>mysql</password>

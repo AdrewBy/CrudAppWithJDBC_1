@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1.0.0-1" author="Ustsinau_A">
+        <sqlFile path="1_create_table_writers.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="1.0.0-2" author="Ustsinau_A">
+        <sqlFile path="2_create_table_posts.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="1.0.0-3" author="Ustsinau_A">
+        <sqlFile path="3_create_table_labels.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="1.0.0-4" author="Ustsinau_A">
+        <sqlFile path="4.1_create_table_test.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="4.2_create_table_post_label.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="1.0.0-5" author="Ustsinau_A">
+        <sqlFile path="5_drop_table_test.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

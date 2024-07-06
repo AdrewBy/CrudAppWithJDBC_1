@@ -29,10 +29,10 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             statement.setTimestamp(4, new Timestamp(post.getUpdated().getTime()));
             statement.executeUpdate();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                post.setId(generatedKeys.getLong(1));
-            }
+//            ResultSet generatedKeys = statement.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                post.setId(generatedKeys.getLong(1));
+//            }
 
             //      savePostLabels(connection, post);
 
