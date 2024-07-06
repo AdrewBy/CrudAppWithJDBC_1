@@ -18,6 +18,7 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
     private final PostMapper postMapper = new PostMapper();
     private final LabelMapper labelMapper = new LabelMapper();
+
     @Override
     public Post create(Post post) {
         String sql = "INSERT INTO posts (content, postStatus, created, updated) VALUES (?,?,?,?)";
@@ -29,12 +30,6 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             statement.setTimestamp(4, new Timestamp(post.getUpdated().getTime()));
             statement.executeUpdate();
 
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            if (generatedKeys.next()) {
-//                post.setId(generatedKeys.getLong(1));
-//            }
-
-            //      savePostLabels(connection, post);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -45,9 +40,12 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     @Override
     public Post update(Post post) {
         String updatePostSql = "UPDATE posts SET content = ?, postStatus = ?, updated = ? WHERE id = ?";
-        String updateLabelSql = "UPDATE post_label SET post_id WHERE id = ?";
+        String updateLabelSql = "INSERT INTO Post_Label (post_id, label_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE post_id = VALUES(post_id)";
+        String deleteLabelsSql = "DELETE FROM Post_Label WHERE post_id = ?";
         try (PreparedStatement updatePostStatement = DatabaseConnection.getInstance().getPreparedStatement(updatePostSql);
-             PreparedStatement updateLabelsStatement = DatabaseConnection.getInstance().getPreparedStatement(updateLabelSql)) {
+             PreparedStatement updateLabelsStatement = DatabaseConnection.getInstance().getPreparedStatement(updateLabelSql);
+             PreparedStatement deleteLabelsStatement = DatabaseConnection.getInstance().getPreparedStatement(deleteLabelsSql)) {
+
 
             updatePostStatement.setString(1, post.getContent());
             updatePostStatement.setString(2, post.getPostStatus().name());
@@ -55,13 +53,20 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             updatePostStatement.setLong(4, post.getId());
             updatePostStatement.executeUpdate();
 
-            updateLabelsStatement.setLong(1, post.getId());
-            updatePostStatement.executeUpdate();
 
+            deleteLabelsStatement.setLong(1, post.getId());
+            deleteLabelsStatement.executeUpdate();
+
+            for (Label label : post.getLabels()) {
+                updateLabelsStatement.setLong(1, post.getId());
+                updateLabelsStatement.setLong(2, label.getId());
+                updateLabelsStatement.executeUpdate();
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         return post;
     }
 

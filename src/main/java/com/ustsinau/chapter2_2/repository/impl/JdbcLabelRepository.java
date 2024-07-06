@@ -17,15 +17,11 @@ public class JdbcLabelRepository implements LabelRepository {
 
     @Override
     public Label create(Label label)  {
-        String sql = "Insert into labels name values ?";
+        String sql = "Insert into labels (name) values (?)";
         try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
             statement.setString(1, label.getName());
             statement.executeUpdate();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                label.setId(generatedKeys.getLong(1));
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -60,7 +56,7 @@ public class JdbcLabelRepository implements LabelRepository {
 
     @Override
     public Label getById(Long id)  {
-       String sql = "Select * from labels where id = ?";
+       String sql = "Select id as label_id, name from labels where id = ?";
        Label label = null;
        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)){
            statement.setLong(1,id);
@@ -82,7 +78,7 @@ public class JdbcLabelRepository implements LabelRepository {
 
 
     private List<Label> getAllLabelsInternal()  {
-        String sql = "Select * from labels";
+        String sql = "Select id as label_id, name from labels";
         List<Label> labels = new ArrayList<>();
         try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)){
             ResultSet resultSet = statement.executeQuery();

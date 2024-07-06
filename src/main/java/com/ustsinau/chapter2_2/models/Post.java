@@ -28,9 +28,10 @@ public class Post {
         this.updated = updated;
     }
 
-    public Post(String content, Date created) {
+    public Post(String content, PostStatus postStatus, Date created) {
         this.content = content;
         this.created = created;
+        this.postStatus = postStatus;
     }
 
     public Post() {
@@ -78,7 +79,7 @@ public class Post {
     }
 
     public PostStatus getPostStatus() {
-        return PostStatus.UNDER_REVIEW;
+        return postStatus;
     }
 
     public void setPostStatus(PostStatus postStatus) {

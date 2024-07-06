@@ -22,7 +22,7 @@
         <sqlFile path="4.2_create_table_post_label.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
-    <changeSet id="1.0.0-5" author="Ustsinau_A">
+    <changeSet id="2024-07-06-1.0.0-5" author="Ustsinau_A">
         <sqlFile path="5_drop_table_test.sql" relativeToChangelogFile="true"/>
     </changeSet>
 

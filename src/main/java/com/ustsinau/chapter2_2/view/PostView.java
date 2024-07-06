@@ -28,9 +28,9 @@ public class PostView {
     public void createPost() throws IOException {
         System.out.println("Введите содержание нового поста:");
         String content = scanner.nextLine();
-
+        PostStatus postStatus = PostStatus.UNDER_REVIEW;
         Date created = new Date();
-        postController.createPost(content, created);
+        postController.createPost(content, postStatus, created);
 
         headConsole.run();
     }

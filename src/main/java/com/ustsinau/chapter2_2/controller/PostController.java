@@ -17,8 +17,8 @@ public class PostController {
         return posts.getAll();
     }
 
-    public void createPost(String content, Date created) {
-        posts.create(new Post( content, created ));
+    public void createPost(String content,PostStatus postStatus, Date created) {
+        posts.create(new Post( content, postStatus, created ));
     }
 
     public void updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus) {
