@@ -24,15 +24,19 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
     public Writer create(Writer writer) {
 
         String sql = "INSERT INTO writers (firstName, lastName) VALUES (?, ?)";
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
             statement.setString(1, writer.getFirstName());
             statement.setString(2, writer.getLastName());
             statement.executeUpdate();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                writer.setId(generatedKeys.getLong(1));
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    writer.setId(generatedKeys.getLong(1));
+                } else {
+                    throw new SQLException("Создание писателя не удалось, не удалось получить ID.");
+                }
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -47,9 +51,9 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
         String updatePostSql = "UPDATE Posts SET writer_id = ? WHERE id = ?";
         String clearWriterPostsSql = "UPDATE Posts SET writer_id = NULL WHERE writer_id = ?";
 
-        try (PreparedStatement updateWriterStatement = DatabaseConnection.getInstance().getPreparedStatement(updateWriterSql);
-             PreparedStatement updatePostStatement = DatabaseConnection.getInstance().getPreparedStatement(updatePostSql);
-             PreparedStatement clearWriterPostsStatement = DatabaseConnection.getInstance().getPreparedStatement(clearWriterPostsSql)) {
+        try (PreparedStatement updateWriterStatement = DatabaseConnection.getPreparedStatement(updateWriterSql);
+             PreparedStatement updatePostStatement = DatabaseConnection.getPreparedStatement(updatePostSql);
+             PreparedStatement clearWriterPostsStatement = DatabaseConnection.getPreparedStatement(clearWriterPostsSql)) {
 
             // Обновление информации об авторе
             updateWriterStatement.setString(1, writer.getFirstName());
@@ -77,7 +81,7 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
     @Override
     public void delete(Long id) {
         String sql = "Delete from writers where id = ?";
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
 
@@ -91,70 +95,111 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
         return getAllWritersInternal();
     }
 
+
     private List<Writer> getAllWritersInternal() {
-        String sql = "SELECT w.id AS writer_id, w.firstName, w.lastName, " +
+        String sql = "SELECT " +
+                "w.id AS writer_id, w.firstName, w.lastName, " +
                 "p.id AS post_id, p.content, p.created, p.updated, p.postStatus, " +
                 "l.id AS label_id, l.name " +
                 "FROM writers w " +
-                "LEFT JOIN posts p ON (w.id = p.writer_id) " +
-                "LEFT JOIN post_label pl ON (p.id = pl.post_id) " +
-                "LEFT JOIN labels l ON (pl.label_id = l.id)";
+                "LEFT JOIN posts p ON w.id = p.writer_id " +
+                "LEFT JOIN post_label pl ON p.id = pl.post_id " +
+                "LEFT JOIN labels l ON pl.label_id = l.id";
 
-        List<Writer> writers = new ArrayList<>();
-        Map<Long, Post> postMap = new HashMap<>();
         Map<Long, Writer> writerMap = new HashMap<>();
 
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 long writerId = resultSet.getLong("writer_id");
-                Writer writer = writerMap.get(writerId);
-                if (writer == null) {
-                    writer = new Writer();
+
+                if (!writerMap.containsKey(writerId)) {
+                    Writer writer = new Writer();
                     writerMapper.mapWriter(resultSet, writer);
-                    writers.add(writer);
                     writerMap.put(writerId, writer);
                 }
 
-
+                Writer writer = writerMap.get(writerId);
                 long postId = resultSet.getLong("post_id");
-                if (postId > 0) {
-                    Post post = postMap.get(postId);
-                    if (post == null) {
-                        post = new Post();
-                        postMapper.mapPost(resultSet, post);
-                        writer.getPosts().add(post);
-                        postMap.put(postId, post);
-                    }
+
+                if (postId != 0) {
+                    Post post = new Post();
+                    postMapper.mapPost(resultSet, post);
+
 
                     long labelId = resultSet.getLong("label_id");
-                    if (labelId > 0) {
+                    if (labelId != 0) {
                         Label label = new Label();
                         labelMapper.mapLabel(resultSet, label);
                         post.getLabels().add(label);
                     }
+
+                    writer.getPosts().add(post);
                 }
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        List<Writer> writers = new ArrayList<>(writerMap.values());
+
         for (Writer writer : writers) {
             writer.getPosts().sort(Comparator.comparingLong(Post::getId));
         }
+
         return writers;
     }
 
-
     @Override
     public Writer getById(Long id) {
-        List<Writer> allWriters = getAllWritersInternal();
-        for (Writer writer : allWriters) {
-            if (writer.getId() == id) {
-                return writer;
+        String sql = "SELECT " +
+                "w.id AS writer_id, w.firstName, w.lastName, " +
+                "p.id AS post_id, p.content, p.created, p.updated, p.postStatus, " +
+                "l.id AS label_id, l.name " +
+                "FROM writers w " +
+                "LEFT JOIN posts p ON w.id = p.writer_id " +
+                "LEFT JOIN post_label pl ON p.id = pl.post_id " +
+                "LEFT JOIN labels l ON pl.label_id = l.id " +
+                "where w.id = ?";
+        Writer writer = null;
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
+
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            Post currentPost = null;
+
+            while (resultSet.next()) {
+                if (writer == null) {
+                    writer = new Writer();
+                    writerMapper.mapWriter(resultSet, writer);
+                }
+
+                long postId = resultSet.getLong("post_id");
+
+                if (postId != 0) {
+                    // Проверка, не тот ли это же пост, что и предыдущий
+                    if (currentPost == null || currentPost.getId() != postId) {
+                        currentPost = new Post();
+                        postMapper.mapPost(resultSet, currentPost);
+                        writer.getPosts().add(currentPost);
+                    }
+
+                    long labelId = resultSet.getLong("label_id");
+                    if (labelId != 0) {
+                        Label label = new Label();
+                        labelMapper.mapLabel(resultSet, label);
+                        currentPost.getLabels().add(label);
+                    }
+
+                }
             }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+
         }
-        return null;
+        return writer;
     }
 }

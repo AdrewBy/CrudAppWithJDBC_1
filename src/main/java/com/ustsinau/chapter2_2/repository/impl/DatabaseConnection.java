@@ -43,7 +43,7 @@ public class DatabaseConnection {
         }
     }
 
-    public static synchronized DatabaseConnection getInstance() {
+    private static synchronized DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();
         }
@@ -54,9 +54,9 @@ public class DatabaseConnection {
         return connection;
     }
 
-    public PreparedStatement getPreparedStatement(String sql) throws SQLException {
-        return connection.prepareStatement(sql);
-    }
 
+    public static PreparedStatement getPreparedStatement(String sql) throws SQLException {
+        return getInstance().connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+    }
 }
 

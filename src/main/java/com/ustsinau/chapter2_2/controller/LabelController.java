@@ -1,36 +1,34 @@
 package com.ustsinau.chapter2_2.controller;
 
 import com.ustsinau.chapter2_2.models.Label;
-import com.ustsinau.chapter2_2.repository.impl.JdbcLabelRepository;
-import com.ustsinau.chapter2_2.repository.LabelRepository;
+import com.ustsinau.chapter2_2.service.LabelService;
+import com.ustsinau.chapter2_2.service.impl.LabelServiceImpl;
 
 import java.util.List;
 
 
 public class LabelController {
-    private final LabelRepository label = new JdbcLabelRepository();
-
-
-    public List<Label> showAll() {
-        return label.getAll();
-    }
+    private final LabelService label = new LabelServiceImpl();
 
     public void createLabel(String name) {
-        label.create(new Label(name));
+        label.createLabel(name);
+    }
+
+    public void updateLabel(long id, String name) {
+        label.updateLabel(id, name);
     }
 
 
-    public void updateLabel(Label labelNew) {
-        label.update(labelNew);
+    public void deleteLabel(Long id) {
+        label.deleteLabel(id);
     }
 
-
-    public void deleteLabel(Long index) {
-        label.delete(index);
+    public Label getLabelById(Long id) {
+        return label.getLabelById(id);
     }
 
-    public Label getValueByIndex(Long id) {
-        return label.getById(id);
+    public List<Label> showAll() {
+        return label.getAllLabels();
     }
 
 

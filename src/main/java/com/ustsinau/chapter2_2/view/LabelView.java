@@ -31,11 +31,10 @@ public class LabelView {
     public void updateLabel() throws IOException {
 
         System.out.println("Введите id лэйбла для его изменения:");
-        long index = Long.parseLong(scanner.next());
+        long id = Long.parseLong(scanner.next());
         System.out.println("Введите новое название лэйбла(состоит из одного слова):");
         String name = scanner.next();
-        Label updateLabel = new Label(index, name);
-        labelContrl.updateLabel(updateLabel);
+        labelContrl.updateLabel(id, name);
         headConsole.run();
     }
 
@@ -51,7 +50,7 @@ public class LabelView {
 
         System.out.println("Введите id лэйбла для получения информации:");
         long id = Long.parseLong(scanner.next());
-        System.out.println("\n" + labelContrl.getValueByIndex(id) + "\n");
+        System.out.println("\n" + labelContrl.getLabelById(id) + "\n");
         headConsole.run();
     }
 

@@ -5,34 +5,34 @@ import com.ustsinau.chapter2_2.models.Post;
 import com.ustsinau.chapter2_2.models.PostStatus;
 import com.ustsinau.chapter2_2.repository.PostRepository;
 import com.ustsinau.chapter2_2.repository.impl.JdbcPostRepositoryImpl;
+import com.ustsinau.chapter2_2.service.PostService;
+import com.ustsinau.chapter2_2.service.impl.PostServiceImpl;
 
 import java.util.*;
 
 public class PostController {
 
-    private final PostRepository posts = new JdbcPostRepositoryImpl();
+    private final PostService posts = new PostServiceImpl();
 
 
-    public List<Post> showAll() {
-        return posts.getAll();
-    }
-
-    public void createPost(String content,PostStatus postStatus, Date created) {
-        posts.create(new Post( content, postStatus, created ));
+    public void createPost(String content, PostStatus postStatus, Date created) {
+        posts.createPost(content, postStatus, created);
     }
 
     public void updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus) {
-
-        Post pst = new Post(id, content, postStatus, updated, labels);
-        posts.update(pst);
+        posts.updatePost(id, content, updated, labels, postStatus);
     }
 
-    public void deletePost(long index) {
-        posts.delete(index);
+    public void deletePost(long id) {
+        posts.deletePost(id);
     }
 
     public Post getPostById(long id) {
-        return posts.getById(id);
+        return posts.getPostById(id);
+    }
+
+    public List<Post> showAll() {
+        return posts.getAllPosts();
     }
 
 }

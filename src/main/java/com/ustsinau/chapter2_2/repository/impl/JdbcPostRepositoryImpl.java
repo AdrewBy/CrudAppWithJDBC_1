@@ -19,10 +19,11 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     private final PostMapper postMapper = new PostMapper();
     private final LabelMapper labelMapper = new LabelMapper();
 
+
     @Override
     public Post create(Post post) {
         String sql = "INSERT INTO posts (content, postStatus, created, updated) VALUES (?,?,?,?)";
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
 
             statement.setString(1, post.getContent());
             statement.setString(2, post.getPostStatus().name());
@@ -30,7 +31,13 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             statement.setTimestamp(4, new Timestamp(post.getUpdated().getTime()));
             statement.executeUpdate();
 
-
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    post.setId(generatedKeys.getLong(1));
+                } else {
+                    throw new SQLException("Создание поста не удалось, не удалось получить ID.");
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -42,9 +49,9 @@ public class JdbcPostRepositoryImpl implements PostRepository {
         String updatePostSql = "UPDATE posts SET content = ?, postStatus = ?, updated = ? WHERE id = ?";
         String updateLabelSql = "INSERT INTO Post_Label (post_id, label_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE post_id = VALUES(post_id)";
         String deleteLabelsSql = "DELETE FROM Post_Label WHERE post_id = ?";
-        try (PreparedStatement updatePostStatement = DatabaseConnection.getInstance().getPreparedStatement(updatePostSql);
-             PreparedStatement updateLabelsStatement = DatabaseConnection.getInstance().getPreparedStatement(updateLabelSql);
-             PreparedStatement deleteLabelsStatement = DatabaseConnection.getInstance().getPreparedStatement(deleteLabelsSql)) {
+        try (PreparedStatement updatePostStatement = DatabaseConnection.getPreparedStatement(updatePostSql);
+             PreparedStatement updateLabelsStatement = DatabaseConnection.getPreparedStatement(updateLabelSql);
+             PreparedStatement deleteLabelsStatement = DatabaseConnection.getPreparedStatement(deleteLabelsSql)) {
 
 
             updatePostStatement.setString(1, post.getContent());
@@ -74,7 +81,7 @@ public class JdbcPostRepositoryImpl implements PostRepository {
     @Override
     public void delete(Long id) {
         String sql = "DELETE FROM posts WHERE id = ?";
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
             statement.setLong(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -84,27 +91,47 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
     @Override
     public Post getById(Long id) {
-        List<Post> posts = getAllPostsInternal();
-        for (Post post : posts) {
-            if (post.getId() == id) {
-                return post;
+        String sql = "SELECT " +
+                "p.id AS post_id, p.content, p.created, p.updated, p.postStatus, " +
+                "l.id AS label_id, l.name " +
+                "FROM posts p " +
+                "LEFT JOIN post_label pl ON p.id = pl.post_id " +
+                "LEFT JOIN labels l ON pl.label_id = l.id " +
+                "WHERE p.id = ?";
+        Post post = null;
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                if (post == null) {
+                    post = new Post();
+                    postMapper.mapPost(resultSet, post);
+                }
+
+                long labelId = resultSet.getLong("label_id");
+                if (labelId != 0) {
+                    Label label = new Label();
+                    labelMapper.mapLabel(resultSet, label);
+                    post.getLabels().add(label);
+                }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return null;
+        return post;
     }
 
     private List<Post> getAllPostsInternal() {
 
-        String sql = "SELECT p.id as post_id, p.content, p.postStatus, p.created, p.updated," +
-                " l.id AS label_id, l.name " +
+        String sql = "SELECT p.id AS post_id, p.content, p.postStatus, p.created, p.updated, " +
+                "l.id AS label_id, l.name " +
                 "FROM posts p " +
                 "LEFT JOIN post_label pl ON p.id = pl.post_id " +
                 "LEFT JOIN labels l ON pl.label_id = l.id";
 
         Map<Long, Post> postMap = new HashMap<>();
-        List<Post> posts = new ArrayList<>();
-
-        try (PreparedStatement statement = DatabaseConnection.getInstance().getPreparedStatement(sql);
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -114,23 +141,23 @@ public class JdbcPostRepositoryImpl implements PostRepository {
                 if (post == null) {
                     post = new Post();
                     postMapper.mapPost(resultSet, post);
-                    post.setLabels(new ArrayList<>());
-                    posts.add(post);
                     postMap.put(postId, post);
                 }
 
                 long labelId = resultSet.getLong("label_id");
-                if (labelId > 0) {
+                if (labelId != 0) {
                     Label label = new Label();
-                    labelMapper.mapLabel(resultSet, label);
+                    labelMapper.mapLabel(resultSet,label);
                     post.getLabels().add(label);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return posts;
+
+        return new ArrayList<>(postMap.values());
     }
+
 
     @Override
     public List<Post> getAll() {
