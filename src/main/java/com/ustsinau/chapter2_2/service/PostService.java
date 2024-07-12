@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface PostService {
-    void createPost(String content, PostStatus postStatus, Date created);
-    void updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus);
+    Post createPost(String content, PostStatus postStatus, Date created);
+    Post updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus);
     void deletePost(long id);
     Post getPostById(long id);
     List<Post> getAllPosts();

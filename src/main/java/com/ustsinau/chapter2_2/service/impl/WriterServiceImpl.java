@@ -11,15 +11,15 @@ import java.util.List;
 public class WriterServiceImpl implements WriterService {
     private final WriterRepository writerRepository = new JdbcWriterRepositoryImpl();
     @Override
-    public void createWriter(String firstName, String lastName) {
+    public Writer createWriter(String firstName, String lastName) {
         Writer writer = new Writer(firstName, lastName);
-        writerRepository.create(writer);
+     return    writerRepository.create(writer);
     }
 
     @Override
-    public void updateWriter(long id, String firstName, String lastName, List<Post> posts) {
+    public Writer updateWriter(long id, String firstName, String lastName, List<Post> posts) {
         Writer wrt = new Writer(id, firstName, lastName, posts );
-        writerRepository.update(wrt);
+      return   writerRepository.update(wrt);
     }
 
     @Override

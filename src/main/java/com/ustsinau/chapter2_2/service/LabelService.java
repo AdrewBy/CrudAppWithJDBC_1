@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface LabelService {
 
-    void createLabel(String name);
-    void updateLabel(long id, String name);
+    Label createLabel(String name);
+    Label updateLabel(long id, String name);
     void deleteLabel(long id);
     Label getLabelById(long id);
 

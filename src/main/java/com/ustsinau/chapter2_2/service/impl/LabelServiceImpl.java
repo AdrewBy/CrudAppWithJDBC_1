@@ -11,16 +11,17 @@ public class LabelServiceImpl implements LabelService {
 
     private final LabelRepository labelRep = new JdbcLabelRepository();
 
+
     @Override
-    public void createLabel(String name) {
+    public Label createLabel(String name) {
         Label label = new Label(name);
-        labelRep.create(label);
+      return  labelRep.create(label);
     }
 
     @Override
-    public void updateLabel(long id, String name) {
+    public Label updateLabel(long id, String name) {
         Label label = new Label(id, name);
-        labelRep.update(label);
+      return  labelRep.update(label);
 
     }
 

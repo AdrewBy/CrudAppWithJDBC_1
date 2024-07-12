@@ -14,15 +14,15 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository = new JdbcPostRepositoryImpl();
 
     @Override
-    public void createPost(String content, PostStatus postStatus, Date created) {
+    public Post createPost(String content, PostStatus postStatus, Date created) {
         Post post = new Post(content, postStatus, created);
-        postRepository.create(post);
+       return postRepository.create(post);
     }
 
     @Override
-    public void updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus) {
+    public Post updatePost(long id, String content, Date updated, List<Label> labels, PostStatus postStatus) {
         Post pst = new Post(id, content, postStatus, updated, labels);
-        postRepository.update(pst);
+      return   postRepository.update(pst);
     }
 
     @Override

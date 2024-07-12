@@ -23,19 +23,12 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JdbcLabelRepositoryTest {
-    @Mock
-    private DatabaseConnection databaseConnection;
 
-    @Mock
-    private PreparedStatement statement;
-
-    @Mock
-    private ResultSet resultSet;
 
     @Mock
     private JdbcLabelRepository mockJdbcLabelRepository;
-    @InjectMocks
-    private JdbcLabelRepository jdbcLabelRepository;
+//    @InjectMocks
+//    private JdbcLabelRepository jdbcLabelRepository;
     Label label1 = new Label("Test 1");
     Label label2 = new Label("Test 2");
 
