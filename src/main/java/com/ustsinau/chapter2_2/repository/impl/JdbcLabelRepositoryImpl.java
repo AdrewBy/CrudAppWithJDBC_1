@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class JdbcLabelRepository implements LabelRepository {
+public class JdbcLabelRepositoryImpl implements LabelRepository {
 
     private final LabelMapper labelMapper = new LabelMapper();
 

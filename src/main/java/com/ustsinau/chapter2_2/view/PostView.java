@@ -5,14 +5,14 @@ import com.ustsinau.chapter2_2.models.Label;
 import com.ustsinau.chapter2_2.models.Post;
 import com.ustsinau.chapter2_2.models.PostStatus;
 import com.ustsinau.chapter2_2.repository.LabelRepository;
-import com.ustsinau.chapter2_2.repository.impl.JdbcLabelRepository;
+import com.ustsinau.chapter2_2.repository.impl.JdbcLabelRepositoryImpl;
 
 import java.io.IOException;
 import java.util.*;
 
 public class PostView {
 
-    private final LabelRepository labelRepository = new JdbcLabelRepository();
+    private final LabelRepository labelRepository = new JdbcLabelRepositoryImpl();
     private final Scanner scanner = new Scanner(System.in);
     private final HeadConsole headConsole = new HeadConsole();
 

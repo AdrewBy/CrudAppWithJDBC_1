@@ -33,7 +33,7 @@ public class DatabaseConnection {
     }
 
     private static DatabaseConnection instance;
-    private Connection connection;
+    private final Connection connection;
 
     private DatabaseConnection() {
         try {

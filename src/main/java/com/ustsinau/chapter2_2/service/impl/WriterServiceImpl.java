@@ -9,7 +9,16 @@ import com.ustsinau.chapter2_2.service.WriterService;
 import java.util.List;
 
 public class WriterServiceImpl implements WriterService {
-    private final WriterRepository writerRepository = new JdbcWriterRepositoryImpl();
+    private final WriterRepository writerRepository ;
+
+    public WriterServiceImpl(WriterRepository writerRepository) {
+        this.writerRepository = writerRepository;
+    }
+
+    public WriterServiceImpl() {
+        this.writerRepository = new JdbcWriterRepositoryImpl();
+    }
+
     @Override
     public Writer createWriter(String firstName, String lastName) {
         Writer writer = new Writer(firstName, lastName);
