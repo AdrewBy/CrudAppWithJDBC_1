@@ -74,7 +74,7 @@ class WriterServiceImplTest {
 
     @Test
     void getAllWriters() {
-        List<Writer> writers = List.of();
+        List<Writer> writers = List.of(writer);
         when(writerRepository.getAll()).thenReturn(writers);
 
         List<Writer> result = writerService.getAllWriters();

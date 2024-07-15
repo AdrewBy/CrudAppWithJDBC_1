@@ -86,9 +86,9 @@ class LabelServiceImplTest {
         when(labelRepository.getAll()).thenReturn(labels);
 
         List<Label> labels2 = labelRepository.getAll();
-        assertEquals(1, labels2.size());
+
         assertEquals(labels, labels2);
-        assertNotNull(labels2);
+
         verify(labelRepository, times(1)).getAll();
     }
 }
