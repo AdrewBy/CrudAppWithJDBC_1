@@ -17,14 +17,13 @@ import java.util.*;
 public class JdbcWriterRepositoryImpl implements WriterRepository {
 
     private final WriterMapper writerMapper = new WriterMapper();
-    private final PostMapper postMapper = new PostMapper();
-    private final LabelMapper labelMapper = new LabelMapper();
+
 
     @Override
     public Writer create(Writer writer) {
 
         String sql = "INSERT INTO writers (firstName, lastName) VALUES (?, ?)";
-        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatementWithGenKey(sql)) {
             statement.setString(1, writer.getFirstName());
             statement.setString(2, writer.getLastName());
             statement.executeUpdate();
@@ -114,29 +113,13 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
             while (resultSet.next()) {
                 long writerId = resultSet.getLong("writer_id");
 
-                if (!writerMap.containsKey(writerId)) {
-                    Writer writer = new Writer();
-                    writerMapper.mapWriter(resultSet, writer);
-                    writerMap.put(writerId, writer);
-                }
+                Writer writer = writerMap.computeIfAbsent(writerId, k -> {
+                    Writer w = new Writer();
+                    w.setPosts(new ArrayList<>());
+                    return w;
+                });
 
-                Writer writer = writerMap.get(writerId);
-                long postId = resultSet.getLong("post_id");
-
-                if (postId != 0) {
-                    Post post = new Post();
-                    postMapper.mapPost(resultSet, post);
-
-
-                    long labelId = resultSet.getLong("label_id");
-                    if (labelId != 0) {
-                        Label label = new Label();
-                        labelMapper.mapLabel(resultSet, label);
-                        post.getLabels().add(label);
-                    }
-
-                    writer.getPosts().add(post);
-                }
+                writerMapper.mapWriter(resultSet, writer, writer.getPosts());
             }
 
         } catch (SQLException e) {
@@ -168,31 +151,15 @@ public class JdbcWriterRepositoryImpl implements WriterRepository {
 
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Post currentPost = null;
+            List<Post> posts = new ArrayList<>();
 
             while (resultSet.next()) {
                 if (writer == null) {
                     writer = new Writer();
-                    writerMapper.mapWriter(resultSet, writer);
-                }
-
-                long postId = resultSet.getLong("post_id");
-
-                if (postId != 0) {
-                    // Проверка, не тот ли это же пост, что и предыдущий
-                    if (currentPost == null || currentPost.getId() != postId) {
-                        currentPost = new Post();
-                        postMapper.mapPost(resultSet, currentPost);
-                        writer.getPosts().add(currentPost);
-                    }
-
-                    long labelId = resultSet.getLong("label_id");
-                    if (labelId != 0) {
-                        Label label = new Label();
-                        labelMapper.mapLabel(resultSet, label);
-                        currentPost.getLabels().add(label);
-                    }
-
+                    writer.setPosts(posts);
+                    writerMapper.mapWriter(resultSet, writer, posts);
+                } else {
+                    writerMapper.mapWriter(resultSet, writer, posts);
                 }
             }
 

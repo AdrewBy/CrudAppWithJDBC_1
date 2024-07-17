@@ -17,13 +17,13 @@ import java.util.Map;
 public class JdbcPostRepositoryImpl implements PostRepository {
 
     private final PostMapper postMapper = new PostMapper();
-    private final LabelMapper labelMapper = new LabelMapper();
+
 
 
     @Override
     public Post create(Post post) {
         String sql = "INSERT INTO posts (content, postStatus, created, updated) VALUES (?,?,?,?)";
-        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatementWithGenKey(sql)) {
 
             statement.setString(1, post.getContent());
             statement.setString(2, post.getPostStatus().name());
@@ -103,17 +103,16 @@ public class JdbcPostRepositoryImpl implements PostRepository {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
 
+
+            List<Label> labels = new ArrayList<>();
+
             while (resultSet.next()) {
                 if (post == null) {
                     post = new Post();
-                    postMapper.mapPost(resultSet, post);
-                }
-
-                long labelId = resultSet.getLong("label_id");
-                if (labelId != 0) {
-                    Label label = new Label();
-                    labelMapper.mapLabel(resultSet, label);
-                    post.getLabels().add(label);
+                    post.setLabels(labels);
+                    postMapper.mapPost(resultSet, post, labels);
+                } else {
+                    postMapper.mapPost(resultSet, post, labels);
                 }
             }
         } catch (SQLException e) {
@@ -136,20 +135,13 @@ public class JdbcPostRepositoryImpl implements PostRepository {
 
             while (resultSet.next()) {
                 long postId = resultSet.getLong("post_id");
-                Post post = postMap.get(postId);
+                Post post = postMap.computeIfAbsent(postId, k -> {
+                    Post p = new Post();
+                    p.setLabels(new ArrayList<>());
+                    return p;
+                });
 
-                if (post == null) {
-                    post = new Post();
-                    postMapper.mapPost(resultSet, post);
-                    postMap.put(postId, post);
-                }
-
-                long labelId = resultSet.getLong("label_id");
-                if (labelId != 0) {
-                    Label label = new Label();
-                    labelMapper.mapLabel(resultSet,label);
-                    post.getLabels().add(label);
-                }
+                postMapper.mapPost(resultSet, post, post.getLabels());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

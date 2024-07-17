@@ -18,7 +18,7 @@ public class JdbcLabelRepositoryImpl implements LabelRepository {
     @Override
     public Label create(Label label)  {
         String sql = "Insert into labels (name) values (?)";
-        try (PreparedStatement statement = DatabaseConnection.getPreparedStatement(sql)) {
+        try (PreparedStatement statement = DatabaseConnection.getPreparedStatementWithGenKey(sql)) {
             statement.setString(1, label.getName());
             statement.executeUpdate();
 

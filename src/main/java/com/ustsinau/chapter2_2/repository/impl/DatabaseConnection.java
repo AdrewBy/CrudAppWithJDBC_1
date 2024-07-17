@@ -55,8 +55,11 @@ public class DatabaseConnection {
     }
 
 
-    public static PreparedStatement getPreparedStatement(String sql) throws SQLException {
+    public static PreparedStatement getPreparedStatementWithGenKey(String sql) throws SQLException {
         return getInstance().connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+    }
+    public static PreparedStatement getPreparedStatement(String sql) throws SQLException {
+        return getInstance().connection.prepareStatement(sql);
     }
 }
 
